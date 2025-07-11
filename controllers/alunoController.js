@@ -13,7 +13,9 @@ async function adicionarAluno(alunoData) {
     return db.collection('alunos').insertOne({
         nome: aluno.nome,
         sobrenome: aluno.sobrenome,
-        turma: aluno.turma
+        turma: aluno.turma,
+        pontos: 0,
+        nivel: 1
     });
 }
 
@@ -39,9 +41,27 @@ async function deletarAlunoPorId(id) {
     return db.collection('alunos').deleteOne({ _id: new ObjectId(id) });
 }
 
+// Atualizar pontos e nível do aluno
+async function atualizarProgressoAluno(id, dados) {
+    const db = await connect();
+    if (!ObjectId.isValid(id)) {
+        return { invalidId: true };
+    }
+    const update = {};
+    if (typeof dados.pontos === 'number') update.pontos = dados.pontos;
+    if (typeof dados.nivel === 'number') update.nivel = dados.nivel;
+    if (Object.keys(update).length === 0) return { noUpdate: true };
+    const result = await db.collection('alunos').updateOne(
+        { _id: new ObjectId(id) },
+        { $set: update }
+    );
+    return result;
+}
+
 module.exports = {
     listarAlunos,
     adicionarAluno,
     buscarAlunosPorNome,
-    deletarAlunoPorId
+    deletarAlunoPorId,
+    atualizarProgressoAluno
 }; 

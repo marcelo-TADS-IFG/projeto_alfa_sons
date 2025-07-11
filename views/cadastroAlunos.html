@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alfa Sons - Cadastro de Alunos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            margin-top: 15px;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .decoration {
+            position: absolute;
+            font-size: 2em;
+            opacity: 0.1;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .decoration:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .decoration:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
+        .decoration:nth-child(3) { bottom: 20%; left: 15%; animation-delay: 2s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .search-container {
+            position: relative;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #667eea;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.2s ease;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .selected-aluno {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .selected-aluno h3 {
+            color: #28a745;
+            margin-bottom: 5px;
+        }
+        .lets-play-effect {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255,255,255,0.95);
+            border-radius: 30px;
+            padding: 50px 60px 40px 60px;
+            box-shadow: 0 10px 40px rgba(102,126,234,0.2);
+            animation: popin 0.3s;
+        }
+        .circle-loader {
+            width: 80px;
+            height: 80px;
+            border: 10px solid #e0e0e0;
+            border-top: 10px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 25px;
+            box-shadow: 0 0 20px #667eea44;
+        }
+        .lets-play-text {
+            font-size: 2em;
+            color: #764ba2;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 8px #667eea22;
+        }
+        .btn-visitante {
+            background: linear-gradient(45deg, #ffb347, #ffcc33);
+            color: #333;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 0;
+        }
+        .btn-visitante:hover {
+            background: linear-gradient(45deg, #ffd700, #ffb347);
+            color: #222;
+        }
+    </style>
+</head>
+<body>
+    <div class="decoration">🎮</div>
+    <div class="decoration">🎯</div>
+    <div class="decoration">🎪</div>
+
+    <div class="container">
+        <div class="logo">🎮 Alfa Sons</div>
+        <div class="subtitle">Cadastro de Alunos - Jogo da Forca Educacional</div>
+
+        <form id="cadastroForm">
+            <div class="form-group">
+                <label for="nome">Nome do Aluno:</label>
+                <input type="text" id="nome" name="nome" required placeholder="Digite o nome do aluno">
+            </div>
+
+            <div class="form-group">
+                <label for="sobrenome">Sobrenome:</label>
+                <input type="text" id="sobrenome" name="sobrenome" required placeholder="Digite o sobrenome">
+            </div>
+
+            <div class="form-group">
+                <label for="turma">Turma:</label>
+                <select id="turma" name="turma" required>
+                    <option value="">Selecione a turma</option>
+                    <option value="1° - A">1° - A</option>
+                    <option value="1° - B">1° - B</option>
+                    <option value="2° - A">2° - A</option>
+                    <option value="2° - B">2° - B</option>
+                    <option value="3° - A">3° - A</option>
+                    <option value="3° - B">3° - B</option>
+                    <option value="4° - A">4° - A</option>
+                    <option value="4° - B">4° - B</option>
+                    <option value="5° - A">5° - A</option>
+                    <option value="5° - B">5° - B</option>
+                    <option value="JARDIN - 1">JARDIM - 1</option>
+                    <option value="JARDIN - 2">JARDIM - 2</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">🎯 Cadastrar Aluno</button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Cadastrando aluno...</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <span style="font-size:1.2em;">✅ Aluno cadastrado com sucesso!</span>
+        </div>
+
+        <!-- Efeito visual Let's Play -->
+        <div id="letsPlayEffect" class="lets-play-effect" style="display:none;">
+            <div class="circle-loader"></div>
+            <div class="lets-play-text">Let's Play!</div>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            ❌ Erro ao cadastrar aluno. Tente novamente.
+        </div>
+
+        <hr style="margin: 40px 0;">
+        <div style="text-align: center; display: flex; flex-direction: column; gap: 18px;">
+            <button type="button" class="btn btn-secondary" id="btnAbrirSelecaoAluno">🎮 Escolher Aluno para Jogar</button>
+            <button type="button" class="btn btn-visitante" id="btnVisitante">👤 Visitante</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedAlunoData = null;
+        let searchTimeout = null;
+
+        // Cadastro de alunos
+        document.getElementById('cadastroForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const nome = document.getElementById('nome').value;
+            const sobrenome = document.getElementById('sobrenome').value;
+            const turma = document.getElementById('turma').value;
+
+            // Mostrar loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('letsPlayEffect').style.display = 'none';
+
+            try {
+                const response = await fetch('http://localhost:3000/alunos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        nome: nome,
+                        sobrenome: sobrenome,
+                        turma: turma
+                    })
+                });
+
+                if (response.ok) {
+                    const alunoCriado = { nome, sobrenome, turma };
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('cadastroForm').reset();
+                    // Efeito Let's Play após sucesso
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                        document.getElementById('letsPlayEffect').style.display = 'flex';
+                        setTimeout(() => {
+                            document.getElementById('letsPlayEffect').style.display = 'none';
+                            // Redireciona com os dados do aluno
+                            const alunoParam = encodeURIComponent(JSON.stringify(alunoCriado));
+                            window.location.href = 'jogoForca.html?aluno=' + alunoParam;
+                        }, 2000);
+                    }, 1200);
+                } else {
+                    // Erro
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('errorMessage').style.display = 'block';
+            } finally {
+                // Esconder loading
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+
+        // Botão para abrir a tela de seleção de aluno
+        document.getElementById('btnAbrirSelecaoAluno').addEventListener('click', function() {
+            window.open('selecaoAluno.html', '_blank', 'width=900,height=700');
+        });
+
+        // Botão para acesso como visitante
+        document.getElementById('btnVisitante').addEventListener('click', function() {
+            window.location.href = 'jogoForca.html?visitante=1';
+        });
+    </script>
+</body>
+</html> 
