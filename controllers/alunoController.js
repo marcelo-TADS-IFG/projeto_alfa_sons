@@ -9,14 +9,24 @@ async function listarAlunos() {
 
 async function adicionarAluno(alunoData) {
     const db = await connect();
+    // Cria o aluno já com pontos e nível padrão (ou use os valores recebidos, se desejar)
     const aluno = new Aluno(alunoData.nome, alunoData.sobrenome, alunoData.turma);
-    return db.collection('alunos').insertOne({
+    const result = await db.collection('alunos').insertOne({
         nome: aluno.nome,
         sobrenome: aluno.sobrenome,
         turma: aluno.turma,
-        pontos: 0,
-        nivel: 1
+        pontos: aluno.pontos,
+        nivel: aluno.nivel
     });
+    // Retorna o aluno criado, incluindo o _id gerado pelo MongoDB
+    return {
+        _id: result.insertedId,
+        nome: aluno.nome,
+        sobrenome: aluno.sobrenome,
+        turma: aluno.turma,
+        pontos: aluno.pontos,
+        nivel: aluno.nivel
+    };
 }
 
 // Buscar todos os alunos que contenham o termo informado em nome, sobrenome ou turma (ignorando maiúsculas/minúsculas e espaços extras)

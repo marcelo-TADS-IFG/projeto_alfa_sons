@@ -146,8 +146,8 @@ router.get('/', async (req, res) => {
 // Adicionar um novo aluno
 router.post('/', async (req, res) => {
     const novoAluno = req.body;
-    await alunoController.adicionarAluno(novoAluno);
-    res.status(201).send('Aluno adicionado!');
+    const alunoCriado = await alunoController.adicionarAluno(novoAluno);
+    res.status(201).json(alunoCriado); // Sempre retorna JSON
 });
 
 // Buscar todos os alunos com o nome informado (lista)

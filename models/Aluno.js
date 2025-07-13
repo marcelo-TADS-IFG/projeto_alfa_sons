@@ -1,8 +1,10 @@
 class Aluno {
-    constructor(nome, sobrenome, turma) {
+    constructor(nome, sobrenome, turma, pontos = 0, nivel = 1) {
         this.nome = nome;
         this.sobrenome = sobrenome;
         this.turma = Aluno.formatarTurma(turma);
+        this.pontos = pontos;
+        this.nivel = nivel;
     }
 
     static formatarTurma(turma) {

@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const alunoRoutes = require('./routes/alunoRoutes');
+const palavraRoutes = require('./routes/palavraRoutes'); // Adicione esta linha
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
@@ -9,7 +11,11 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
+
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 app.use('/alunos', alunoRoutes);
+app.use('/palavras', palavraRoutes); // Adicione esta linha
 
 // Configuração do Swagger
 const swaggerOptions = {

@@ -357,7 +357,8 @@
                 });
 
                 if (response.ok) {
-                    const alunoCriado = { nome, sobrenome, turma };
+                    //const alunoCriado = { nome, sobrenome, turma };
+                    const alunoCriado = await response.json();
                     document.getElementById('successMessage').style.display = 'block';
                     document.getElementById('cadastroForm').reset();
                     // Efeito Let's Play após sucesso

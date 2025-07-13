@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemplo - Jogo com Imagem de Recompensa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .game-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .word-display {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+        .hint {
+            font-size: 1.2em;
+            color: #666;
+            margin: 15px 0;
+            font-style: italic;
+        }
+        .input-container {
+            margin: 20px 0;
+        }
+        input[type="text"] {
+            font-size: 1.5em;
+            padding: 10px 15px;
+            border: 3px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            width: 200px;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        .reward-image {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin: 20px auto;
+            display: none;
+        }
+        .success-message {
+            color: #28a745;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin: 15px 0;
+            display: none;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 1.1em;
+            margin: 10px 0;
+            display: none;
+        }
+        .score {
+            font-size: 1.2em;
+            color: #333;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎮 Alfa Sons - Jogo de Palavras</h1>
+        
+        <div class="score">
+            Pontos: <span id="pontos">0</span> | 
+            Nível: <span id="nivel">1</span>
+        </div>
+
+        <div class="word-display" id="wordDisplay">_ _ _ _</div>
+        <div class="hint" id="hint">Dica: É um animal que uiva</div>
+
+        <div class="input-container">
+            <input type="text" id="wordInput" placeholder="Digite a palavra" maxlength="10">
+            <br>
+            <button onclick="checkWord()">Verificar</button>
+            <button onclick="newWord()">Nova Palavra</button>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            🎉 Parabéns! Você acertou!
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            ❌ Tente novamente!
+        </div>
+
+        <img id="rewardImage" class="reward-image" alt="Imagem de recompensa">
+    </div>
+
+    <script>
+       let palavras = [];
+let currentWord = null;
+let pontos = 0;
+let nivel = 1;
+
+// Buscar palavras da API ao iniciar
+async function fetchPalavras() {
+    try {
+        const response = await fetch('http://localhost:3000/palavras');
+        const data = await response.json();
+        palavras = data.map(palavra => ({
+            ...palavra,
+            imagem: palavra.imagem.startsWith('http') ? palavra.imagem : `http://localhost:3000${palavra.imagem}`
+        }));
+        initGame();
+    } catch (error) {
+        alert('Erro ao buscar palavras da API');
+    }
+}
+
+function initGame() {
+    newWord();
+    updateScore();
+}
+
+function newWord() {
+    currentWord = palavras[Math.floor(Math.random() * palavras.length)];
+    document.getElementById('wordDisplay').textContent = '_ '.repeat(currentWord.texto.length);
+    document.getElementById('hint').textContent = `Dica: ${currentWord.dica}`;
+    document.getElementById('wordInput').value = '';
+    document.getElementById('successMessage').style.display = 'none';
+    document.getElementById('errorMessage').style.display = 'none';
+    document.getElementById('rewardImage').style.display = 'none';
+    document.getElementById('wordInput').focus();
+}
+
+function checkWord() {
+    const input = document.getElementById('wordInput').value.toLowerCase().trim();
+    const successMsg = document.getElementById('successMessage');
+    const errorMsg = document.getElementById('errorMessage');
+    const rewardImg = document.getElementById('rewardImage');
+
+    if (input === currentWord.texto.toLowerCase()) {
+        // Sucesso!
+        successMsg.style.display = 'block';
+        errorMsg.style.display = 'none';
+        rewardImg.src = currentWord.imagem;
+        rewardImg.style.display = 'block';
+        
+        // Adicionar pontos
+        pontos += 10;
+        updateScore();
+        
+        // Aguardar um pouco e mostrar nova palavra
+        setTimeout(() => {
+            newWord();
+        }, 3000);
+    } else {
+        // Erro
+        errorMsg.style.display = 'block';
+        successMsg.style.display = 'none';
+        rewardImg.style.display = 'none';
+    }
+}
+
+function updateScore() {
+    document.getElementById('pontos').textContent = pontos;
+    document.getElementById('nivel').textContent = nivel;
+}
+
+document.getElementById('wordInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        checkWord();
+    }
+});
+
+// Inicializar jogo quando a página carregar
+window.onload = fetchPalavras;
+    </script>
+</body>
+</html> 
