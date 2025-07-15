@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Forca - Alfa Sons (API)</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .game-container {
+            background: #fff;
+            border-radius: 15px;
+            padding: 30px 40px 30px 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 800px;
+        }
+        .game-container h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        #forca-container {
+            margin-bottom: 10px;
+        }
+        .word-display {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0 10px 0;
+            letter-spacing: 8px;
+        }
+        .hint {
+            font-size: 1.1em;
+            color: #666;
+            margin: 10px 0 5px 0;
+            font-style: italic;
+        }
+        .tentativas {
+            margin: 10px 0 20px 0;
+            font-size: 1.1em;
+        }
+        .tentativas .erro {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .tentativas .total {
+            color: #333;
+        }
+        .teclado {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .teclado button {
+            background: #667eea;
+            color: white;
+            border: 2px solid #fff;
+            border-radius: 6px;
+            width: 45px;
+            height: 40px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 2px;
+            transition: background 0.2s;
+        }
+        .teclado button:disabled {
+            background: #b3b3b3;
+            color: #eee;
+            border: 2px solid #eee;
+            cursor: not-allowed;
+        }
+        .mensagem {
+            font-size: 1.2em;
+            margin: 15px 0 0 0;
+            font-weight: bold;
+            display: none;
+        }
+        .mensagem.sucesso {
+            color: #28a745;
+            display: block;
+        }
+        .mensagem.erro {
+            color: #dc3545;
+            display: block;
+        }
+        .reward-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin: 15px auto;
+            display: block;
+        }
+        .popup-parabens {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .popup-content {
+            background: #fff;
+            border-radius: 15px;
+            padding: 30px 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+        .popup-imagem {
+            max-width: 180px;
+            max-height: 180px;
+            border-radius: 10px;
+            margin: 20px 0 10px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        .popup-palavra {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0 0 0;
+            letter-spacing: 8px;
+        }
+        @keyframes popup-bounce {
+            0% { transform: scale(0.7); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            80% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+        .popup-content {
+            animation: popup-bounce 0.7s;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
+        }
+        .mensagem.erro.shake {
+            animation: shake 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎮 Alfa Sons - Jogo da Forca</h1>
+        <div id="forca-container">
+            <img id="forca-img" src="imagemForca/forca.svg" alt="Forca" width="300" height="220">
+        </div>
+        <img id="rewardImage" class="reward-image" alt="Imagem de recompensa" style="display:none;">
+        <div class="word-display" id="wordDisplay">_ _ _ _</div>
+        <div class="hint" id="hint">Dica: ...</div>
+        <div id="teclado" class="teclado"></div>
+        <div id="mensagem" class="mensagem"></div>
+    </div>
+    <!-- Popup de Parabéns -->
+    <div id="popupParabens" class="popup-parabens" style="display:none;">
+        <div class="popup-content">
+            <h2>🎉 Parabéns!</h2>
+            <img id="popupImagem" src="" alt="Imagem de recompensa" class="popup-imagem">
+            <div id="popupPalavra" class="popup-palavra"></div>
+        </div>
+    </div>
+    <script>
+    let palavras = [];
+    let tentativasMax = 6;
+    let palavra = "";
+    let dica = "";
+    let imagem = "";
+    let letrasDescobertas = [];
+    let tentativas = 0;
+    let letrasErradas = [];
+    let fimDeJogo = false;
+
+    function pronunciarPalavra(texto) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(texto);
+            utterance.lang = 'pt-BR';
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    // Buscar palavras da API ao iniciar
+    async function fetchPalavras() {
+        try {
+            const response = await fetch('http://localhost:3000/palavras');
+            const data = await response.json();
+            palavras = data.map(palavra => ({
+                ...palavra,
+                imagem: palavra.imagem.startsWith('http') ? palavra.imagem : `http://localhost:3000${palavra.imagem}`
+            }));
+            escolherPalavra();
+        } catch (error) {
+            alert('Erro ao buscar palavras da API');
+        }
+    }
+
+    function escolherPalavra() {
+        const sorteada = palavras[Math.floor(Math.random() * palavras.length)];
+        palavra = sorteada.texto.toUpperCase();
+        dica = sorteada.dica;
+        imagem = sorteada.imagem;
+        letrasDescobertas = Array(palavra.length).fill("_");
+        tentativas = 0;
+        letrasErradas = [];
+        fimDeJogo = false;
+        atualizarForca();
+        atualizarTela();
+        document.getElementById('mensagem').style.display = 'none';
+        document.getElementById('rewardImage').style.display = 'none';
+        document.getElementById('popupParabens').style.display = 'none'; // Esconde o popup ao iniciar uma nova palavra
+    }
+
+    function renderTeclado() {
+        const teclado = document.getElementById('teclado');
+        teclado.innerHTML = "";
+        const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        letras.forEach(letra => {
+            const btn = document.createElement('button');
+            btn.textContent = letra;
+            btn.disabled = fimDeJogo || letrasDescobertas.includes(letra) || letrasErradas.includes(letra);
+            btn.onclick = () => tentarLetra(letra);
+            teclado.appendChild(btn);
+        });
+    }
+
+    function tentarLetra(letra) {
+        if (fimDeJogo) return;
+        let acertou = false;
+        palavra.split("").forEach((l, i) => {
+            if (l === letra) {
+                letrasDescobertas[i] = letra;
+                acertou = true;
+            }
+        });
+        if (!acertou) {
+            tentativas++;
+            letrasErradas.push(letra);
+            atualizarForca();
+        }
+        atualizarTela();
+        checarFimDeJogo();
+    }
+
+    function atualizarForca() {
+        const img = document.getElementById('forca-img');
+        if (tentativas === 0) img.src = 'imagemForca/forca.svg';
+        else img.src = `imagemForca/forca-${tentativas}.svg`;
+    }
+
+    function atualizarTela() {
+        document.getElementById('wordDisplay').textContent = letrasDescobertas.join(" ");
+        document.getElementById('hint').textContent = `Dica: ${dica}`;
+        renderTeclado();
+    }
+
+    function checarFimDeJogo() {
+        const mensagem = document.getElementById('mensagem');
+        const rewardImg = document.getElementById('rewardImage');
+        if (!letrasDescobertas.includes("_")) {
+            // Esconde mensagem e imagem padrão
+            mensagem.style.display = 'none';
+            rewardImg.style.display = 'none';
+
+            // Pronuncia a palavra
+            pronunciarPalavra(palavra);
+
+            // Preenche e mostra o popup
+            document.getElementById('popupImagem').src = imagem;
+            document.getElementById('popupPalavra').textContent = palavra;
+            document.getElementById('popupParabens').style.display = 'flex';
+
+            fimDeJogo = true;
+            setTimeout(() => {
+                document.getElementById('popupParabens').style.display = 'none';
+                escolherPalavra();
+            }, 4000);
+        } else if (tentativas >= tentativasMax) {
+            mensagem.textContent = `❌ Fim de jogo! A palavra era: ${palavra}`;
+            mensagem.className = "mensagem erro shake";
+            mensagem.style.display = 'block';
+            rewardImg.style.display = 'none';
+            fimDeJogo = true;
+            setTimeout(() => {
+                mensagem.classList.remove('shake');
+                escolherPalavra();
+            }, 3000);
+        }
+    }
+
+    window.onload = fetchPalavras;
+    </script>
+</body>
+</html> 

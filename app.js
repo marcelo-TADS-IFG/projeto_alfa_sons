@@ -13,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(express.static(path.join(__dirname, 'views')));
 
 app.use('/alunos', alunoRoutes);
 app.use('/palavras', palavraRoutes); // Adicione esta linha

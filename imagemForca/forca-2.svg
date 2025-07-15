@@ -1,0 +1,16 @@
+<svg width="300" height="220" viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- Base -->
+  <line x1="20" y1="200" x2="180" y2="200" stroke="black" stroke-width="4"/>
+  <!-- Poste vertical -->
+  <line x1="50" y1="200" x2="50" y2="30" stroke="black" stroke-width="4"/>
+  <!-- Poste horizontal -->
+  <line x1="50" y1="30" x2="180" y2="30" stroke="black" stroke-width="4"/>
+  <!-- Suporte diagonal -->
+  <line x1="50" y1="60" x2="80" y2="30" stroke="black" stroke-width="4"/>
+  <!-- Gancho -->
+  <line x1="180" y1="30" x2="180" y2="60" stroke="black" stroke-width="4"/>
+  <!-- Cabeça -->
+  <circle cx="180" cy="75" r="15" stroke="black" stroke-width="4" fill="none"/>
+  <!-- Corpo -->
+  <line x1="180" y1="90" x2="180" y2="140" stroke="black" stroke-width="4"/>
+</svg>

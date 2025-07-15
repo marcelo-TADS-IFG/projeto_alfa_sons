@@ -3,28 +3,7 @@ const path = require('path');
 
 // Dados de exemplo para popular o banco
 const palavrasExemplo = [
-    {
-        texto: "lobo",
-        nivel: 1,
-        dica: "É um animal que uiva",
-        silabas: ["lo", "bo"],
-        // URL da imagem que será servida pelo Express
-        imagem: "/images/lobo.png"
-    },
-    {
-        texto: "gato",
-        nivel: 1,
-        dica: "Animal doméstico que mia",
-        silabas: ["ga", "to"],
-        imagem: "/images/gato.png"
-    },
-    {
-        texto: "casa",
-        nivel: 1,
-        dica: "Lugar onde moramos",
-        silabas: ["ca", "sa"],
-        imagem: "/images/casa.png"
-    },
+    
     {
         texto: "bola",
         nivel: 1,
@@ -38,6 +17,13 @@ const palavrasExemplo = [
         dica: "Móvel para colocar coisas",
         silabas: ["me", "sa"],
         imagem: "/images/mesa.png"
+    },
+    {
+        texto: "dama",
+        nivel: 1,
+        dica: "Jogo de tabuleiro",
+        silabas: ["da", "ma"],
+        imagem: "/images/dama.png"
     }
 ];
 
@@ -87,27 +73,6 @@ async function popularComURLsPersonalizadas() {
         // Dados com URLs personalizadas
         const palavrasComURLs = [
             {
-                texto: "lobo",
-                nivel: 1,
-                dica: "É um animal que uiva",
-                silabas: ["lo", "bo"],
-                imagem: "/images/lobo.png"
-            },
-            {
-                texto: "gato",
-                nivel: 1,
-                dica: "Animal doméstico que mia",
-                silabas: ["ga", "to"],
-                imagem: "/images/gato.png"
-            },
-            {
-                texto: "casa",
-                nivel: 1,
-                dica: "Lugar onde moramos",
-                silabas: ["ca", "sa"],
-                imagem: "/images/casa.png"
-            },
-            {
                 texto: "bola",
                 nivel: 1,
                 dica: "Objeto redondo para brincar",
@@ -120,6 +85,13 @@ async function popularComURLsPersonalizadas() {
                 dica: "Móvel para colocar coisas",
                 silabas: ["me", "sa"],
                 imagem: "/images/mesa.png"
+            },
+            {
+                texto: "dama",
+                nivel: 1,
+                dica: "Jogo de tabuleiro",
+                silabas: ["da", "ma"],
+                imagem: "/images/dama.png"
             }
         ];
 
@@ -180,12 +152,95 @@ async function popularSemImagens() {
     }
 }
 
+// Função para adicionar apenas novas palavras (sem deletar existentes)
+async function adicionarNovasPalavras() {
+    try {
+        console.log('Conectando ao MongoDB...');
+        const db = await connect();
+        const collection = db.collection('palavras');
+
+        // Dados das novas palavras (Nível 2 - 7 letras)
+        const novasPalavras = [
+            {
+                texto: "amarelo",
+                nivel: 2,
+                dica: "Cor do sol e das bananas",
+                silabas: ["a", "ma", "re", "lo"],
+                imagem: "/images/amarelo.png"
+            },
+            {
+                texto: "cachorro",
+                nivel: 2,
+                dica: "Animal doméstico que late",
+                silabas: ["ca", "chor", "ro"],
+                imagem: "/images/cachorro.png"
+            },
+            {
+                texto: "janela",
+                nivel: 2,
+                dica: "Abertura na parede para ver fora",
+                silabas: ["ja", "ne", "la"],
+                imagem: "/images/janela.png"
+            },
+            {
+                texto: "livro",
+                nivel: 1,
+                dica: "Objeto com páginas para ler",
+                silabas: ["li", "vro"],
+                imagem: "/images/livro.png"
+            },
+            {
+                texto: "carro",
+                nivel: 1,
+                dica: "Veículo com quatro rodas",
+                silabas: ["car", "ro"],
+                imagem: "/images/carro.png"
+            }
+        ];
+
+        // Verificar palavras que já existem
+        const palavrasExistentes = await collection.find({}).toArray();
+        const textosExistentes = palavrasExistentes.map(p => p.texto);
+        
+        // Filtrar apenas palavras que não existem
+        const palavrasParaInserir = novasPalavras.filter(palavra => 
+            !textosExistentes.includes(palavra.texto)
+        );
+
+        if (palavrasParaInserir.length === 0) {
+            console.log('ℹ️ Todas as palavras já existem no banco!');
+            return;
+        }
+
+        // Inserir apenas as novas palavras
+        console.log(`Inserindo ${palavrasParaInserir.length} novas palavras no banco...`);
+        const resultado = await collection.insertMany(palavrasParaInserir);
+
+        console.log(`✅ ${resultado.insertedCount} palavras inseridas com sucesso!`);
+        console.log('Novas palavras inseridas:');
+        palavrasParaInserir.forEach(palavra => {
+            console.log(`- ${palavra.texto} (Nível ${palavra.nivel}) - Imagem: ${palavra.imagem}`);
+        });
+
+        console.log(`\n📊 Total de palavras no banco: ${palavrasExistentes.length + resultado.insertedCount}`);
+
+    } catch (error) {
+        console.error('❌ Erro ao adicionar palavras:', error);
+    } finally {
+        process.exit(0);
+    }
+}
+
 // Executar o script
 if (require.main === module) {
     const usarURLs = process.argv.includes('--urls');
     const semImagens = process.argv.includes('--sem-imagens');
+    const adicionarNovas = process.argv.includes('--adicionar');
     
-    if (semImagens) {
+    if (adicionarNovas) {
+        console.log('➕ Adicionando apenas novas palavras (sem deletar existentes)...');
+        adicionarNovasPalavras();
+    } else if (semImagens) {
         console.log('📝 Populando sem imagens (null)...');
         popularSemImagens();
     } else if (usarURLs) {
@@ -197,4 +252,4 @@ if (require.main === module) {
     }
 }
 
-module.exports = { popularPalavras, popularComURLsPersonalizadas, popularSemImagens }; 
+module.exports = { popularPalavras, popularComURLsPersonalizadas, popularSemImagens, adicionarNovasPalavras }; 
