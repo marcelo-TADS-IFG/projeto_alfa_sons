@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,7 +58,8 @@
             font-size: 1.1em;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
             padding: 15px;
             border: 3px solid #e0e0e0;
@@ -68,7 +70,8 @@
             background: #f9f9f9;
         }
 
-        input:focus, select:focus {
+        input:focus,
+        select:focus {
             outline: none;
             border-color: #667eea;
             background: white;
@@ -142,8 +145,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .decoration {
@@ -153,13 +161,34 @@
             animation: float 3s ease-in-out infinite;
         }
 
-        .decoration:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
-        .decoration:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
-        .decoration:nth-child(3) { bottom: 20%; left: 15%; animation-delay: 2s; }
+        .decoration:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .decoration:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 1s;
+        }
+
+        .decoration:nth-child(3) {
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 2s;
+        }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
 
         .search-container {
@@ -211,6 +240,7 @@
             color: #28a745;
             margin-bottom: 5px;
         }
+
         .lets-play-effect {
             position: fixed;
             top: 50%;
@@ -220,12 +250,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 30px;
             padding: 50px 60px 40px 60px;
-            box-shadow: 0 10px 40px rgba(102,126,234,0.2);
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
             animation: popin 0.3s;
         }
+
         .circle-loader {
             width: 80px;
             height: 80px;
@@ -236,6 +267,7 @@
             margin-bottom: 25px;
             box-shadow: 0 0 20px #667eea44;
         }
+
         .lets-play-text {
             font-size: 2em;
             color: #764ba2;
@@ -244,6 +276,7 @@
             letter-spacing: 2px;
             text-shadow: 2px 2px 8px #667eea22;
         }
+
         .btn-visitante {
             background: linear-gradient(45deg, #ffb347, #ffcc33);
             color: #333;
@@ -251,12 +284,14 @@
             font-size: 1.1em;
             margin-top: 0;
         }
+
         .btn-visitante:hover {
             background: linear-gradient(45deg, #ffd700, #ffb347);
             color: #222;
         }
     </style>
 </head>
+
 <body>
     <div class="decoration">🎮</div>
     <div class="decoration">🎯</div>
@@ -320,7 +355,8 @@
 
         <hr style="margin: 40px 0;">
         <div style="text-align: center; display: flex; flex-direction: column; gap: 18px;">
-            <button type="button" class="btn btn-secondary" id="btnAbrirSelecaoAluno">🎮 Escolher Aluno para Jogar</button>
+            <button type="button" class="btn btn-secondary" id="btnAbrirSelecaoAluno">🎮 Escolher Aluno para
+                Jogar</button>
             <button type="button" class="btn btn-visitante" id="btnVisitante">👤 Visitante</button>
         </div>
     </div>
@@ -330,7 +366,7 @@
         let searchTimeout = null;
 
         // Cadastro de alunos
-        document.getElementById('cadastroForm').addEventListener('submit', async function(e) {
+        document.getElementById('cadastroForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const nome = document.getElementById('nome').value;
@@ -386,14 +422,23 @@
         });
 
         // Botão para abrir a tela de seleção de aluno
-        document.getElementById('btnAbrirSelecaoAluno').addEventListener('click', function() {
-            window.open('selecaoAluno.html', '_blank', 'width=900,height=700');
+        document.getElementById('btnAbrirSelecaoAluno').addEventListener('click', function () {
+            const width = 900;
+            const height = 700;
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+            window.open(
+                'selecaoAluno.html',
+                '_blank',
+                `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+            );
         });
 
         // Botão para acesso como visitante
-        document.getElementById('btnVisitante').addEventListener('click', function() {
+        document.getElementById('btnVisitante').addEventListener('click', function () {
             window.location.href = 'jogoForca.html?visitante=1';
         });
     </script>
 </body>
-</html> 
+
+</html>

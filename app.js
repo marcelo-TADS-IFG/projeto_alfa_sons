@@ -13,7 +13,18 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/imagemForca', express.static(path.join(__dirname, 'imagemForca')));
 app.use(express.static(path.join(__dirname, 'views')));
+
+// Rota para servir a tela de cadastro como página inicial
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'cadastroAlunos.html'));
+});
+
+// Rota para o jogo da forca
+app.get('/jogo', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'jogoForca.html'));
+});
 
 app.use('/alunos', alunoRoutes);
 app.use('/palavras', palavraRoutes); // Adicione esta linha

@@ -29,6 +29,8 @@ class ServicoDeAudio {
     ServicoDeAudio._falar(palavra);
   }
 
+
+
   static pronunciarSilabas(silabas) {
     if (Array.isArray(silabas)) {
       ServicoDeAudio._falar(silabas.join(' '));

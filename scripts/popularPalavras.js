@@ -1,209 +1,183 @@
 const { connect } = require('../dao/mongoConnection');
 const path = require('path');
 
-// Dados de exemplo para popular o banco
-const palavrasExemplo = [
-    
-    {
-        texto: "bola",
-        nivel: 1,
-        dica: "Objeto redondo para brincar",
-        silabas: ["bo", "la"],
-        imagem: "/images/bola.png"
-    },
-    {
-        texto: "mesa",
-        nivel: 1,
-        dica: "Móvel para colocar coisas",
-        silabas: ["me", "sa"],
-        imagem: "/images/mesa.png"
-    },
-    {
-        texto: "dama",
-        nivel: 1,
-        dica: "Jogo de tabuleiro",
-        silabas: ["da", "ma"],
-        imagem: "/images/dama.png"
-    }
-];
-
-async function popularPalavras() {
-    try {
-        console.log('Conectando ao MongoDB...');
-        const db = await connect();
-        const collection = db.collection('palavras');
-
-        // Limpar coleção existente
-        console.log('Limpando coleção existente...');
-        await collection.deleteMany({});
-
-        // Inserir palavras no banco
-        console.log('Inserindo palavras no banco...');
-        const resultado = await collection.insertMany(palavrasExemplo);
-
-        console.log(`✅ ${resultado.insertedCount} palavras inseridas com sucesso!`);
-        console.log('Palavras inseridas:');
-        palavrasExemplo.forEach(palavra => {
-            console.log(`- ${palavra.texto} (Nível ${palavra.nivel}) - Imagem: ${palavra.imagem}`);
-        });
-
-        console.log('\n📁 Próximos passos:');
-        console.log('1. Crie uma pasta "images" na raiz do projeto');
-        console.log('2. Adicione as imagens: lobo.png, gato.png, casa.png, bola.png, mesa.png');
-        console.log('3. Configure o Express para servir arquivos estáticos da pasta images');
-
-    } catch (error) {
-        console.error('❌ Erro ao popular palavras:', error);
-    } finally {
-        process.exit(0);
-    }
-}
-
-// Função para popular com URLs personalizadas
-async function popularComURLsPersonalizadas() {
-    try {
-        console.log('Conectando ao MongoDB...');
-        const db = await connect();
-        const collection = db.collection('palavras');
-
-        // Limpar coleção existente
-        console.log('Limpando coleção existente...');
-        await collection.deleteMany({});
-
-        // Dados com URLs personalizadas
-        const palavrasComURLs = [
-            {
-                texto: "bola",
-                nivel: 1,
-                dica: "Objeto redondo para brincar",
-                silabas: ["bo", "la"],
-                imagem: "/images/bola.png"
-            },
-            {
-                texto: "mesa",
-                nivel: 1,
-                dica: "Móvel para colocar coisas",
-                silabas: ["me", "sa"],
-                imagem: "/images/mesa.png"
-            },
-            {
-                texto: "dama",
-                nivel: 1,
-                dica: "Jogo de tabuleiro",
-                silabas: ["da", "ma"],
-                imagem: "/images/dama.png"
-            }
-        ];
-
-        // Inserir palavras no banco
-        console.log('Inserindo palavras no banco...');
-        const resultado = await collection.insertMany(palavrasComURLs);
-
-        console.log(`✅ ${resultado.insertedCount} palavras inseridas com sucesso!`);
-        console.log('Palavras inseridas:');
-        palavrasComURLs.forEach(palavra => {
-            console.log(`- ${palavra.texto} (Nível ${palavra.nivel}) - Imagem: ${palavra.imagem}`);
-        });
-
-    } catch (error) {
-        console.error('❌ Erro ao popular palavras:', error);
-    } finally {
-        process.exit(0);
-    }
-}
-
-// Função para popular sem imagens (apenas com null)
-async function popularSemImagens() {
-    try {
-        console.log('Conectando ao MongoDB...');
-        const db = await connect();
-        const collection = db.collection('palavras');
-
-        // Limpar coleção existente
-        console.log('Limpando coleção existente...');
-        await collection.deleteMany({});
-
-        // Dados sem imagens
-        const palavrasSemImagens = palavrasExemplo.map(palavra => ({
-            texto: palavra.texto,
-            nivel: palavra.nivel,
-            dica: palavra.dica,
-            silabas: palavra.silabas,
-            imagem: null
-        }));
-
-        // Inserir palavras no banco
-        console.log('Inserindo palavras no banco...');
-        const resultado = await collection.insertMany(palavrasSemImagens);
-
-        console.log(`✅ ${resultado.insertedCount} palavras inseridas com sucesso!`);
-        console.log('Palavras inseridas:');
-        palavrasSemImagens.forEach(palavra => {
-            console.log(`- ${palavra.texto} (Nível ${palavra.nivel}) - Imagem: ${palavra.imagem}`);
-        });
-
-        console.log('\n📝 As imagens foram definidas como null.');
-        console.log('Você pode atualizar manualmente no banco ou usar a API para adicionar as URLs das imagens.');
-
-    } catch (error) {
-        console.error('❌ Erro ao popular palavras:', error);
-    } finally {
-        process.exit(0);
-    }
-}
-
-// Função para adicionar apenas novas palavras (sem deletar existentes)
+// Função para adicionar apenas palavras novas 
 async function adicionarNovasPalavras() {
     try {
         console.log('Conectando ao MongoDB...');
         const db = await connect();
         const collection = db.collection('palavras');
 
-        // Dados das novas palavras (Nível 2 - 7 letras)
+        // Dados das palavras (Nível 2 - 7 letras) - COMENTADO
+        /*
         const novasPalavras = [
             {
-                texto: "amarelo",
+                texto: "morango",
                 nivel: 2,
-                dica: "Cor do sol e das bananas",
-                silabas: ["a", "ma", "re", "lo"],
-                imagem: "/images/amarelo.png"
+                dica: "Fruta vermelha com sementes por fora",
+                silabas: ["mo", "ran", "go"],
+                imagem: "/images/morango.png"
             },
             {
-                texto: "cachorro",
+                texto: "caderno",
                 nivel: 2,
-                dica: "Animal doméstico que late",
-                silabas: ["ca", "chor", "ro"],
-                imagem: "/images/cachorro.png"
+                dica: "Usado para escrever na escola",
+                silabas: ["ca", "der", "no"],
+                imagem: "/images/caderno.png"
             },
             {
-                texto: "janela",
+                texto: "camiseta",
                 nivel: 2,
-                dica: "Abertura na parede para ver fora",
-                silabas: ["ja", "ne", "la"],
-                imagem: "/images/janela.png"
+                dica: "Roupa usada na parte de cima do corpo",
+                silabas: ["ca", "mi", "se", "ta"],
+                imagem: "/images/camiseta.png"
             },
             {
-                texto: "livro",
-                nivel: 1,
-                dica: "Objeto com páginas para ler",
-                silabas: ["li", "vro"],
-                imagem: "/images/livro.png"
+                texto: "meninas",
+                nivel: 2,
+                dica: "Plural de menina",
+                silabas: ["me", "ni", "nas"],
+                imagem: "/images/meninas.png"
             },
             {
-                texto: "carro",
-                nivel: 1,
-                dica: "Veículo com quatro rodas",
-                silabas: ["car", "ro"],
-                imagem: "/images/carro.png"
+                texto: "garrafa",
+                nivel: 2,
+                dica: "Usada para armazenar líquidos",
+                silabas: ["gar", "ra", "fa"],
+                imagem: "/images/garrafa.png"
+            },
+            {
+                texto: "telefone",
+                nivel: 2,
+                dica: "Aparelho usado para ligações",
+                silabas: ["te", "le", "fo", "ne"],
+                imagem: "/images/telefone.png"
+            },
+            {
+                texto: "pipocas",
+                nivel: 2,
+                dica: "Comida popular no cinema",
+                silabas: ["pi", "po", "cas"],
+                imagem: "/images/pipocas.png"
+            }
+        ];
+        */
+
+        // Dados das palavras (Nível 3 - 10 letras)
+        const novasPalavrasNivel3 = [
+            {
+                texto: "abacateiro",
+                nivel: 3,
+                dica: "Árvore que produz abacate",
+                silabas: ["a", "ba", "ca", "tei", "ro"],
+                imagem: "/images/abacateiro.png"
+            },
+            {
+                texto: "passadeira",
+                nivel: 3,
+                dica: "Tapete comprido ou quem passa roupa",
+                silabas: ["pas", "sa", "dei", "ra"],
+                imagem: "/images/passadeira.png"
+            },
+            {
+                texto: "girasol",
+                nivel: 2,
+                dica: "Flor que gira em direção ao sol",
+                silabas: ["gi", "ras", "sol"],
+                imagem: "/images/girasol.png"
+            },
+            {
+                texto: "cavalheiro",
+                nivel: 3,
+                dica: "Homem educado e cortês",
+                silabas: ["ca", "val", "hei", "ro"],
+                imagem: "/images/cavalheiro.png"
+            },
+            {
+                texto: "brincadeira",
+                nivel: 3,
+                dica: "Atividade lúdica de crianças",
+                silabas: ["brin", "ca", "dei", "ra"],
+                imagem: "/images/brincadeira.png"
+            },
+            {
+                texto: "computador",
+                nivel: 3,
+                dica: "Máquina usada para processar dados",
+                silabas: ["com", "pu", "ta", "dor"],
+                imagem: "/images/computador.png"
+            },
+            {
+                texto: "futebolista",
+                nivel: 3,
+                dica: "Pessoa que joga futebol",
+                silabas: ["fu", "te", "bo", "lis", "ta"],
+                imagem: "/images/futebolista.png"
+            },
+            {
+                texto: "caminhantes",
+                nivel: 3,
+                dica: "Pessoas que caminham",
+                silabas: ["ca", "mi", "nhan", "tes"],
+                imagem: "/images/caminhantes.png"
+            },
+            {
+                texto: "paralelepípedo",
+                nivel: 4,
+                dica: "Pedra usada em calçamento",
+                silabas: ["pa", "ra", "le", "le", "pí", "pe", "do"],
+                imagem: "/images/paralelepipedo.png"
+            },
+            {
+                texto: "telefonema",
+                nivel: 3,
+                dica: "Ato de telefonar para alguém",
+                silabas: ["te", "le", "fo", "ne", "ma"],
+                imagem: "/images/telefonema.png"
+            },
+            {
+                texto: "aniversario",
+                nivel: 3,
+                dica: "Data em que se comemora o nascimento",
+                silabas: ["a", "ni", "ver", "sa", "ri", "o"],
+                imagem: "/images/aniversario.png"
+            },
+            {
+                texto: "bibliotecaria",
+                nivel: 4,
+                dica: "Profissional que trabalha em biblioteca",
+                silabas: ["bi", "bli", "o", "te", "ca", "ria"],
+                imagem: "/images/bibliotecaria.png"
+            },
+            {
+                texto: "eletricista",
+                nivel: 3,
+                dica: "Profissional que trabalha com eletricidade",
+                silabas: ["e", "le", "tri", "cis", "ta"],
+                imagem: "/images/eletricista.png"
+            },
+            {
+                texto: "matemático",
+                nivel: 3,
+                dica: "Especialista em matemática",
+                silabas: ["ma", "te", "má", "ti", "co"],
+                imagem: "/images/matematico.png"
+            },
+            {
+                texto: "jornalista",
+                nivel: 3,
+                dica: "Profissional que trabalha com notícias",
+                silabas: ["jor", "na", "lis", "ta"],
+                imagem: "/images/jornalista.png"
             }
         ];
 
         // Verificar palavras que já existem
         const palavrasExistentes = await collection.find({}).toArray();
         const textosExistentes = palavrasExistentes.map(p => p.texto);
-        
+
         // Filtrar apenas palavras que não existem
-        const palavrasParaInserir = novasPalavras.filter(palavra => 
+        const palavrasParaInserir = novasPalavrasNivel3.filter(palavra =>
             !textosExistentes.includes(palavra.texto)
         );
 
@@ -233,23 +207,8 @@ async function adicionarNovasPalavras() {
 
 // Executar o script
 if (require.main === module) {
-    const usarURLs = process.argv.includes('--urls');
-    const semImagens = process.argv.includes('--sem-imagens');
-    const adicionarNovas = process.argv.includes('--adicionar');
-    
-    if (adicionarNovas) {
-        console.log('➕ Adicionando apenas novas palavras (sem deletar existentes)...');
-        adicionarNovasPalavras();
-    } else if (semImagens) {
-        console.log('📝 Populando sem imagens (null)...');
-        popularSemImagens();
-    } else if (usarURLs) {
-        console.log('🖼️ Populando com URLs de imagens...');
-        popularComURLsPersonalizadas();
-    } else {
-        console.log('🖼️ Populando com URLs padrão de imagens...');
-        popularPalavras();
-    }
+    // Sempre adiciona novas palavras ao rodar o script
+    adicionarNovasPalavras();
 }
 
-module.exports = { popularPalavras, popularComURLsPersonalizadas, popularSemImagens, adicionarNovasPalavras }; 
+module.exports = { adicionarNovasPalavras }; 
