@@ -14,6 +14,7 @@ app.use(express.json());
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/imagemForca', express.static(path.join(__dirname, 'imagemForca')));
+app.use(express.static('src'));
 app.use(express.static(path.join(__dirname, 'views')));
 
 // Rota para servir a tela de cadastro como página inicial

@@ -15,7 +15,10 @@ const buscarPorNivel = async (req, res) => {
   const nivel = parseInt(req.params.nivel);
   try {
     const palavras = await palavraDAO.buscarPorNivel(nivel);
-    res.json(palavras);
+    res.json({
+      quantidade: palavras.length,
+      palavras: palavras
+    });
   } catch (err) {
     res.status(500).json({ error: 'Erro ao buscar palavras por nível.' });
   }

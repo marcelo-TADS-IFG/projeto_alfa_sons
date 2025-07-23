@@ -64,7 +64,7 @@ async function adicionarNovasPalavras() {
         */
 
         // Dados das palavras (Nível 3 - 10 letras)
-        const novasPalavrasNivel3 = [
+        /*const novasPalavrasNivel3 = [
             {
                 texto: "abacateiro",
                 nivel: 3,
@@ -169,6 +169,52 @@ async function adicionarNovasPalavras() {
                 dica: "Profissional que trabalha com notícias",
                 silabas: ["jor", "na", "lis", "ta"],
                 imagem: "/images/jornalista.png"
+            }
+        ];
+        */
+
+        const novasPalavrasNivel1 = [
+            {
+                texto: "pato",
+                nivel: 1,
+                dica: "Ave que nada e faz quac-quac",
+                silabas: ["pa", "to"],
+                imagem: "/images/pato.png"
+            },
+            {
+                texto: "foca",
+                nivel: 1,
+                dica: "Animal marinho que bate palmas",
+                silabas: ["fo", "ca"],
+                imagem: "/images/foca.png"
+            },
+            {
+                texto: "sapo",
+                nivel: 1,
+                dica: "Animal que pula e vive na lagoa",
+                silabas: ["sa", "po"],
+                imagem: "/images/sapo.png"
+            },
+            {
+                texto: "vela",
+                nivel: 1,
+                dica: "Usada para iluminar quando falta luz",
+                silabas: ["ve", "la"],
+                imagem: "/images/vela.png"
+            },
+            {
+                texto: "pipa",
+                nivel: 1,
+                dica: "Brinquedo de papel que voa com o vento",
+                silabas: ["pi", "pa"],
+                imagem: "/images/pipa.png"
+            },
+            {
+                texto: "copo",
+                nivel: 1,
+                dica: "Usado para beber água",
+                silabas: ["co", "po"],
+                imagem: "/images/copo.png"
             }
         ];
 

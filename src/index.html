@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Imagens de Palavras</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        input[type="text"] {
+            padding: 8px 12px;
+            font-size: 1.1em;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            margin-right: 8px;
+        }
+        button {
+            padding: 8px 18px;
+            font-size: 1.1em;
+            border-radius: 6px;
+            border: none;
+            background: #667eea;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #4b5bdc;
+        }
+        .img-preview {
+            margin-top: 25px;
+            max-width: 300px;
+            max-height: 220px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+            display: none;
+        }
+        .error {
+            color: #dc3545;
+            margin-top: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Teste de Imagens de Palavras</h2>
+        <input type="text" id="palavraInput" placeholder="Digite a palavra...">
+        <button onclick="buscarImagem()">Buscar Imagem</button>
+        <div>
+            <img id="imgPreview" class="img-preview" src="" alt="Imagem da palavra">
+            <div id="errorMsg" class="error"></div>
+        </div>
+    </div>
+    <script>
+        function buscarImagem() {
+            const palavra = document.getElementById('palavraInput').value.trim().toLowerCase();
+            const img = document.getElementById('imgPreview');
+            const errorMsg = document.getElementById('errorMsg');
+            if (!palavra) {
+                img.style.display = 'none';
+                errorMsg.textContent = 'Digite uma palavra.';
+                return;
+            }
+            // Monta o caminho da imagem
+            let caminho = `/images/${palavra.replace(/[^a-zA-Z0-9\-]/g, '')}.png`;
+            img.src = caminho;
+            img.style.display = 'block';
+            errorMsg.textContent = '';
+            img.onerror = function() {
+                img.style.display = 'none';
+                errorMsg.textContent = 'Imagem não encontrada para: ' + palavra;
+            };
+            img.onload = function() {
+                errorMsg.textContent = '';
+            };
+        }
+    </script>
+</body>
+</html> 

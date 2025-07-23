@@ -42,7 +42,7 @@ async function buscarPalavraAleatoriaDoNivel() {
     try {
         let tentativasSorteio = 0;
         let sorteada;
-        const maxTentativas = 10; // Evita loop infinito
+        const maxTentativas = 15; // Evita loop infinito
 
         do {
             const response = await fetch(`http://localhost:3000/palavras/aleatoria/${nivelAtual}`);
@@ -59,7 +59,7 @@ async function buscarPalavraAleatoriaDoNivel() {
         palavra = sorteada.texto.toUpperCase();
         dica = sorteada.dica;
         imagem = sorteada.imagem.startsWith('http') ? sorteada.imagem : `http://localhost:3000${sorteada.imagem}`;
-        letrasDescobertas = Array(palavra.length).fill("_");
+        letrasDescobertas = palavra.split("").map(l => l === "-" ? "-" : "_"); // Traços já aparecem
         tentativas = 0; // Zera as tentativas do jogo
         letrasErradas = [];
         fimDeJogo = false;
@@ -94,12 +94,17 @@ function renderTeclado() {
     });
 }
 
+function removerAcentos(letra) {
+    return letra.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 function tentarLetra(letra) {
     if (fimDeJogo) return;
     let acertou = false;
     palavra.split("").forEach((l, i) => {
-        if (l === letra) {
-            letrasDescobertas[i] = letra;
+        // Compara sem acento
+        if (removerAcentos(l.toUpperCase()) === letra.toUpperCase()) {
+            letrasDescobertas[i] = l; // Revela a letra original (com acento)
             acertou = true;
         }
     });

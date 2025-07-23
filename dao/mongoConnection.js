@@ -8,7 +8,7 @@ let db = null;
 
 async function connect() {
     if (db) return db;
-    const client = new MongoClient(url, { useUnifiedTopology: true });
+    const client = new MongoClient(url); // Removido useUnifiedTopology
     await client.connect();
     db = client.db(dbName);
     return db;
