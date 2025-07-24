@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alfa Sons - Cadastro de Alunos</title>
+    <link rel="stylesheet" href="../css/cadastroAluno.css">
+</head>
+
+<body>
+    <div class="decoration">🎮</div>
+    <div class="decoration">🎯</div>
+    <div class="decoration">🎪</div>
+
+    <div class="container">
+        <div class="logo">🎮 EduForca</div>
+        <div class="subtitle">Cadastro de Alunos - Jogo da Forca Educacional</div>
+
+        <form id="cadastroForm">
+            <div class="form-group">
+                <label for="nome">Nome do Aluno:</label>
+                <input type="text" id="nome" name="nome" required placeholder="Digite o nome do aluno">
+            </div>
+
+            <div class="form-group">
+                <label for="sobrenome">Sobrenome:</label>
+                <input type="text" id="sobrenome" name="sobrenome" required placeholder="Digite o sobrenome">
+            </div>
+
+            <div class="form-group">
+                <label for="turma">Turma:</label>
+                <select id="turma" name="turma" required>
+                    <option value="">Selecione a turma</option>
+                    <option value="1° - A">1° - A</option>
+                    <option value="1° - B">1° - B</option>
+                    <option value="2° - A">2° - A</option>
+                    <option value="2° - B">2° - B</option>
+                    <option value="3° - A">3° - A</option>
+                    <option value="3° - B">3° - B</option>
+                    <option value="4° - A">4° - A</option>
+                    <option value="4° - B">4° - B</option>
+                    <option value="5° - A">5° - A</option>
+                    <option value="5° - B">5° - B</option>
+                    <option value="JARDIN - 1">JARDIM - 1</option>
+                    <option value="JARDIN - 2">JARDIM - 2</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">🎯 Cadastrar Aluno</button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Cadastrando aluno...</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <span style="font-size:1.2em;">✅ Aluno cadastrado com sucesso!</span>
+        </div>
+
+        <!-- Efeito visual Let's Play -->
+        <div id="letsPlayEffect" class="lets-play-effect" style="display:none;">
+            <div class="circle-loader"></div>
+            <div class="lets-play-text">Let's Play!</div>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            ❌ Erro ao cadastrar aluno. Tente novamente.
+        </div>
+
+        <hr style="margin: 40px 0;">
+        <div style="text-align: center; display: flex; flex-direction: column; gap: 18px;">
+            <button type="button" class="btn btn-secondary" id="btnAbrirSelecaoAluno">🎮 Escolher Aluno para
+                Jogar</button>
+            <button type="button" class="btn btn-visitante" id="btnVisitante">👤 Visitante</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedAlunoData = null;
+        let searchTimeout = null;
+
+        // Cadastro de alunos
+        document.getElementById('cadastroForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const nome = document.getElementById('nome').value;
+            const sobrenome = document.getElementById('sobrenome').value;
+            const turma = document.getElementById('turma').value;
+
+            // Mostrar loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('letsPlayEffect').style.display = 'none';
+
+            try {
+                const response = await fetch('http://localhost:3000/alunos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        nome: nome,
+                        sobrenome: sobrenome,
+                        turma: turma
+                    })
+                });
+
+                if (response.ok) {
+                    //const alunoCriado = { nome, sobrenome, turma };
+                    const alunoCriado = await response.json();
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('cadastroForm').reset();
+                    // Efeito Let's Play após sucesso
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                        document.getElementById('letsPlayEffect').style.display = 'flex';
+                        setTimeout(() => {
+                            document.getElementById('letsPlayEffect').style.display = 'none';
+                            // Redireciona com os dados do aluno
+                            const alunoParam = encodeURIComponent(JSON.stringify(alunoCriado));
+                            window.location.href = 'jogoForca.html?aluno=' + alunoParam;
+                        }, 2000);
+                    }, 1200);
+                } else {
+                    // Erro
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('errorMessage').style.display = 'block';
+            } finally {
+                // Esconder loading
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+
+        // Botão para abrir a tela de seleção de aluno
+        document.getElementById('btnAbrirSelecaoAluno').addEventListener('click', function () {
+            const width = 900;
+            const height = 700;
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+            window.open(
+                'selecaoAluno.html',
+                '_blank',
+                `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+            );
+        });
+
+        // Botão para acesso como visitante
+        document.getElementById('btnVisitante').addEventListener('click', function () {
+            window.location.href = '/html/jogoForca.html?visitante=1';
+        });
+    </script>
+</body>
+
+</html>

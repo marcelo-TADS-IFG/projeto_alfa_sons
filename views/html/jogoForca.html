@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduForca - Jogo da Forca</title>
+    <link rel="stylesheet" href="../css/jogoForca.css">
+</head>
+
+<body>
+    <!-- Header do Aluno -->
+    <div id="headerAluno" class="header-aluno" style="display:none;">
+        <div class="header-aluno-content">
+            <div class="aluno-nome" id="alunoNome">Nome do Aluno</div>
+            <div class="aluno-info">
+                <div class="aluno-item">
+                    <div class="aluno-label">Turma</div>
+                    <div class="aluno-value" id="alunoTurma">-</div>
+                </div>
+                <div class="aluno-item">
+                    <div class="aluno-label">Nível</div>
+                    <div class="aluno-value" id="alunoNivel">1</div>
+                </div>
+                <div class="aluno-item">
+                    <div class="aluno-label">Pontos</div>
+                    <div class="aluno-value" id="alunoPontos">0</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-sair" id="btnSair">Sair</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="icon">🎲</div>
+        <div class="logo">🎮 EduForca</div>
+        <div id="forca-container">
+            <img id="forca-img" src="/imagemForca/forca.svg" alt="Forca" width="300" height="220">
+        </div>
+        <img id="rewardImage" class="reward-image" alt="Imagem de recompensa" style="display:none;">
+        <div class="word-display" id="wordDisplay">_ _ _ _</div>
+        <div class="hint" id="hint">Dica: ...</div>
+        <div id="teclado" class="teclado"></div>
+        <div id="mensagem" class="mensagem"></div>
+    </div>
+    <!-- Popup de Parabéns -->
+    <div id="popupParabens" class="popup-parabens" style="display:none;">
+        <div class="popup-content">
+            <h2>🎉 Parabéns!</h2>
+            <img id="popupImagem" src="" alt="Imagem de recompensa" class="popup-imagem">
+            <div id="popupPalavra" class="popup-palavra"></div>
+        </div>
+    </div>
+    <!-- Popup de Avanço de Nível -->
+    <div id="popupNivel" class="popup-nivel" style="display:none;">
+        <div class="popup-nivel-content">
+            <div class="popup-nivel-emoji">🚀🎯🌈</div>
+            <div class="popup-nivel-msg">Parabéns! Você avançou de nível!</div>
+            <div id="popupNivelNumero" class="popup-nivel-nivel"></div>
+        </div>
+    </div>
+    <!-- Modal de Fim de Jogo -->
+    <div id="modalFimDeJogo" class="modal-fimdejogo" style="display:none;">
+        <div class="modal-fimdejogo-content">
+            <div>❌ Fim de jogo! A palavra era: <span id="palavraCorreta"></span></div>
+        </div>
+    </div>
+    <!-- Modal de Sair -->
+    <div id="modalSair" class="modal-sair" style="display:none;">
+        <div class="modal-sair-content">
+            <div style="font-size:1.5em; color:#764ba2; margin-bottom:10px;">Deseja sair?</div>
+            <div style="margin-bottom:10px;">Você alcançou:</div>
+            <div><b>Pontos:</b> <span id="modalSairPontos">0</span></div>
+            <div><b>Nível:</b> <span id="modalSairNivel">1</span></div>
+            <div class="modal-sair-btns">
+                <button class="modal-sair-btn" id="btnConfirmarSair">Sim, sair</button>
+                <button class="modal-sair-btn cancelar" id="btnCancelarSair">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <script src="/javascript/funcoesJogoDaForca.js"></script>
+
+    <script>
+        // Inicialização do jogo
+        window.onload = () => {
+            nivelAtual = 1;
+            acertosNoNivel = 0;
+            escolherPalavra();
+        };
+
+        // Suporte a query de aluno (opcional)
+        function getAlunoFromQuery() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('aluno')) {
+                try {
+                    return JSON.parse(decodeURIComponent(params.get('aluno')));
+                } catch (e) {
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        const aluno = getAlunoFromQuery();
+        if (aluno) {
+            // Exibe o header do aluno
+            document.getElementById('headerAluno').style.display = 'block';
+            document.getElementById('alunoNome').textContent = `${aluno.nome} ${aluno.sobrenome}`;
+            document.getElementById('alunoTurma').textContent = aluno.turma;
+            document.getElementById('alunoNivel').textContent = nivelAtual;
+            document.getElementById('alunoPontos').textContent = pontosAluno;
+        }
+
+        // Botão Sair
+        const btnSair = document.getElementById('btnSair');
+        const modalSair = document.getElementById('modalSair');
+        const btnConfirmarSair = document.getElementById('btnConfirmarSair');
+        const btnCancelarSair = document.getElementById('btnCancelarSair');
+        const modalSairPontos = document.getElementById('modalSairPontos');
+        const modalSairNivel = document.getElementById('modalSairNivel');
+
+        if (btnSair) {
+            btnSair.onclick = () => {
+                // Atualiza pontos e nível no modal
+                modalSairPontos.textContent = window.pontosAluno !== undefined ? window.pontosAluno : document.getElementById('alunoPontos').textContent;
+                modalSairNivel.textContent = window.nivelAtual !== undefined ? window.nivelAtual : document.getElementById('alunoNivel').textContent;
+                modalSair.style.display = 'flex';
+            };
+        }
+        if (btnCancelarSair) {
+            btnCancelarSair.onclick = () => {
+                modalSair.style.display = 'none';
+            };
+        }
+        if (btnConfirmarSair) {
+            btnConfirmarSair.onclick = () => {
+                window.location.href = '/';
+            };
+        }
+    </script>
+</body>
+
+</html>

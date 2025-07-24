@@ -19,12 +19,22 @@ app.use(express.static(path.join(__dirname, 'views')));
 
 // Rota para servir a tela de cadastro como página inicial
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'cadastroAlunos.html'));
+  res.sendFile(path.join(__dirname, 'views', 'html', 'cadastroAlunos.html'));
 });
+
+// Rota para seleção de aluno
+app.get('/selecao', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'html', 'selecaoAluno.html'));
+});
+
+// Sirva as pastas estáticas:
+app.use('/html', express.static(path.join(__dirname, 'views/html')));
+app.use('/css', express.static(path.join(__dirname, 'views/css')));
+app.use('/javascript', express.static(path.join(__dirname, 'views/javascript')));
 
 // Rota para o jogo da forca
 app.get('/jogo', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'jogoForca.html'));
+  res.sendFile(path.join(__dirname, 'views', 'html', 'jogoForca.html'));
 });
 
 app.use('/alunos', alunoRoutes);
