@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Gerador de Onomatopeias</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    #letra {
+      font-size: 120px;
+      transition: transform 0.3s ease;
+      display: inline-block;
+    }
+
+    .zoom {
+      transform: scale(1.5);
+    }
+
+    input {
+      font-size: 30px;
+      width: 80px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Gerador de Onomatopeias</h1>
+  <p>Digite uma letra e veja o som onomatopeico!</p>
+
+  <input type="text" id="entradaLetra" maxlength="1" placeholder="Digite uma letra" title="Digite uma letra" />
+  <button onclick="mostrarLetra()">Tocar</button>
+
+  <div id="letra">_</div>
+
+  <script>
+    const onomatopeias = {
+      a: ['ahh', 'aaa'],
+      b: ['buuu', 'bam'],
+      c: ['crac', 'clac'],
+      d: ['dum', 'dadum'],
+      e: ['eee', 'éh'],
+      f: ['fuuu'],
+      g: ['grr'],
+      h: ['haa'],
+      i: ['iii'],
+      j: ['juh'],
+      k: ['ka!'],
+      l: ['lah'],
+      m: ['muu'],
+      n: ['nah'],
+      o: ['ohh'],
+      p: ['pá!', 'pum'],
+      q: ['quá'],
+      r: ['rrr'],
+      s: ['sss'],
+      t: ['tum'],
+      u: ['uuu'],
+      v: ['vuum'],
+      w: ['wau'],
+      x: ['xiii'],
+      y: ['yey'],
+      z: ['zum']
+    };
+
+    function escolherOnomatopeia(letra) {
+      const sons = onomatopeias[letra.toLowerCase()];
+      if (!sons) return letra;
+      return sons[Math.floor(Math.random() * sons.length)];
+    }
+
+    function mostrarLetra() {
+      const entrada = document.getElementById('entradaLetra');
+      const letra = entrada.value.trim().toLowerCase();
+      if (!letra || letra.length !== 1 || !/[a-z]/.test(letra)) return;
+
+      const onoma = escolherOnomatopeia(letra);
+      const div = document.getElementById('letra');
+      div.textContent = letra.toUpperCase();
+
+      // animação zoom
+      div.classList.add('zoom');
+      setTimeout(() => div.classList.remove('zoom'), 300);
+
+      // falar o som
+      const fala = new SpeechSynthesisUtterance(onoma);
+      fala.lang = 'pt-BR';
+      fala.pitch = 1.3;
+      fala.rate = 0.9;
+      speechSynthesis.speak(fala);
+    }
+  </script>
+
+</body>
+</html>

@@ -15,6 +15,8 @@ let acertosNoNivel = 0;
 const NIVEL_MAXIMO = 5;
 let palavrasExibidas = []; // Armazena palavras já exibidas no nível atual
 let pontosAluno = 0; // Pontos do aluno
+let estadoAnterior = [];
+
 
 function pronunciarPalavra(texto) {
     if ('speechSynthesis' in window) {
@@ -101,19 +103,26 @@ function removerAcentos(letra) {
 function tentarLetra(letra) {
     if (fimDeJogo) return;
     let acertou = false;
+
+    // Salva o estado antes de atualizar
+    const letrasAntes = [...letrasDescobertas];
+
     palavra.split("").forEach((l, i) => {
-        // Compara sem acento
         if (removerAcentos(l.toUpperCase()) === letra.toUpperCase()) {
-            letrasDescobertas[i] = l; // Revela a letra original (com acento)
+            letrasDescobertas[i] = l;
             acertou = true;
         }
     });
+
     if (!acertou) {
         tentativas++;
         letrasErradas.push(letra);
         atualizarForca();
     }
-    atualizarTela();
+
+    // Passa o estado anterior para comparar dentro de atualizarTela
+    atualizarTela(letrasAntes);
+
     checarFimDeJogo();
 }
 
@@ -123,10 +132,43 @@ function atualizarForca() {
     else img.src = `/imagemForca/forca-${tentativas}.svg`;
 }
 
-function atualizarTela() {
-    document.getElementById('wordDisplay').textContent = letrasDescobertas.join(" ");
+function atualizarTela(letrasAntes = []) {
+    const container = document.getElementById('wordDisplay');
+    container.innerHTML = '';
+    palavra.split("").forEach((letra, index) => {
+        const span = document.createElement('span');
+        span.id = `letra-${index}`;
+        span.className = 'letra-jogo';
+        span.textContent = letrasDescobertas[index];
+
+        // Aplica zoom se essa letra foi revelada nesta rodada
+        if (letrasDescobertas[index] !== "_" && letrasAntes[index] === "_") {
+            setTimeout(() => {
+                span.classList.add('zoom');
+                setTimeout(() => span.classList.remove('zoom'), 300);
+            }, 0);
+        }
+
+
+        container.appendChild(span);
+        container.append(' ');
+    });
+
     document.getElementById('hint').textContent = `Dica: ${dica}`;
     renderTeclado();
+}
+
+function adicionarLetra(container, letra, index) {
+    const span = document.createElement('span');
+    span.id = `letra-${index}`;
+    span.className = 'letra-jogo';
+    span.textContent = letra;
+    container.appendChild(span);
+    container.append(' ');
+
+    // Aplica o efeito de zoom
+    span.classList.add('zoom');
+    setTimeout(() => span.classList.remove('zoom'), 300); // ou ajuste para 1300 se quiser acompanhar o CSS
 }
 
 function checarFimDeJogo() {
@@ -141,11 +183,11 @@ function checarFimDeJogo() {
         document.getElementById('popupParabens').style.display = 'flex';
         fimDeJogo = true;
         acertosNoNivel++;
-        
+
         // Adiciona pontos por acerto
         pontosAluno += 10;
         atualizarHeaderAluno();
-        
+
         // Animação especial do dado quando acerta
         const dado = document.querySelector('.icon');
         if (dado) {
@@ -157,21 +199,21 @@ function checarFimDeJogo() {
         setTimeout(() => {
             document.getElementById('popupParabens').style.display = 'none';
             destacarSilabas();
-        }, 4000);
+        }, 5000);
     } else if (tentativas >= tentativasMax) {
         // Esconde mensagens anteriores
         mensagem.style.display = 'none';
         rewardImg.style.display = 'none';
-        
+
         // Mostra o modal de fim de jogo
         document.getElementById('palavraCorreta').textContent = palavra;
         document.getElementById('modalFimDeJogo').style.display = 'flex';
         fimDeJogo = true;
-        
+
         setTimeout(() => {
             document.getElementById('modalFimDeJogo').style.display = 'none';
             escolherPalavra();
-        }, 4000);
+        }, 5000);
     }
 }
 
@@ -184,7 +226,7 @@ function destacarSilabas() {
     wordDisplay.innerHTML = palavraAtual.silabas.map(s => `<span style="color:#764ba2;font-weight:bold;font-size:1.3em;">${s}</span>`).join('<span style="color:#333;font-size:1.2em;">-</span>');
     setTimeout(() => {
         proximaPalavraOuNivel();
-    }, 7000);
+    }, 5000);
 }
 
 function mostrarPopupNivel(nivel) {
@@ -199,7 +241,7 @@ function mostrarPopupNivel(nivel) {
 function atualizarHeaderAluno() {
     const headerNivel = document.getElementById('alunoNivel');
     const headerPontos = document.getElementById('alunoPontos');
-    
+
     if (headerNivel) headerNivel.textContent = nivelAtual;
     if (headerPontos) headerPontos.textContent = pontosAluno;
 }

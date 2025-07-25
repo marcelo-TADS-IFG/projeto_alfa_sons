@@ -55,6 +55,16 @@ body {
     margin: 20px 0 10px 0;
     letter-spacing: 8px;
 }
+.word-display span {
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+  .letra-jogo {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 48px;
+    transition: transform 0.3s ease;
+  }
 .hint {
     font-size: 1.1em;
     color: #666;
@@ -343,3 +353,15 @@ body {
 .container {
     margin-top: 80px;
 }
+.zoom {
+    transform: scale(1.6);
+    transition: transform 0.3s ease;
+    color: rgba(6, 2, 29, 1); /* TEMPORÁRIO para debug visual */
+  }  
+  
+
+  
+  
+  
+  
+  
