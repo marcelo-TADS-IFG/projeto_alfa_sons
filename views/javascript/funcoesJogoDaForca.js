@@ -143,12 +143,11 @@ function atualizarTela(letrasAntes = []) {
 
         // Aplica zoom se essa letra foi revelada nesta rodada
         if (letrasDescobertas[index] !== "_" && letrasAntes[index] === "_") {
+            span.classList.add('zoom');
             setTimeout(() => {
-                span.classList.add('zoom');
-                setTimeout(() => span.classList.remove('zoom'), 300);
-            }, 0);
+                span.classList.remove('zoom');
+            }, 1300); // 0.3s de entrada + 2s de pausa
         }
-
 
         container.appendChild(span);
         container.append(' ');
@@ -174,47 +173,61 @@ function adicionarLetra(container, letra, index) {
 function checarFimDeJogo() {
     const mensagem = document.getElementById('mensagem');
     const rewardImg = document.getElementById('rewardImage');
+
     if (!letrasDescobertas.includes("_")) {
         mensagem.style.display = 'none';
         rewardImg.style.display = 'none';
-        pronunciarPalavra(palavra);
-        document.getElementById('popupImagem').src = imagem;
-        document.getElementById('popupPalavra').textContent = palavra;
-        document.getElementById('popupParabens').style.display = 'flex';
+
+
+        // Espera 1 segundo antes de mostrar o popup
+        setTimeout(() => {
+            pronunciarPalavra(palavra); // fala imediatamente
+
+            document.getElementById('popupImagem').src = imagem;
+            document.getElementById('popupPalavra').textContent = palavra;
+            document.getElementById('popupParabens').style.display = 'flex';
+
+            // Animação especial do dado
+            const dado = document.querySelector('.icon');
+            if (dado) {
+                dado.style.animation = 'dado-spin 1s ease-in-out';
+                setTimeout(() => {
+                    dado.style.animation = 'dado-bounce 2s ease-in-out infinite';
+                }, 1000);
+            }
+
+            // Esconde o popup após 5s
+            setTimeout(() => {
+                document.getElementById('popupParabens').style.display = 'none';
+                destacarSilabas();
+            }, 5000);
+        }, 2000); // espera 1 segundo antes de mostrar o popup
+
         fimDeJogo = true;
         acertosNoNivel++;
-
-        // Adiciona pontos por acerto
         pontosAluno += 10;
         atualizarHeaderAluno();
-
-        // Animação especial do dado quando acerta
-        const dado = document.querySelector('.icon');
-        if (dado) {
-            dado.style.animation = 'dado-spin 1s ease-in-out';
-            setTimeout(() => {
-                dado.style.animation = 'dado-bounce 2s ease-in-out infinite';
-            }, 1000);
-        }
-        setTimeout(() => {
-            document.getElementById('popupParabens').style.display = 'none';
-            destacarSilabas();
-        }, 5000);
     } else if (tentativas >= tentativasMax) {
-        // Esconde mensagens anteriores
         mensagem.style.display = 'none';
         rewardImg.style.display = 'none';
-
-        // Mostra o modal de fim de jogo
+    
         document.getElementById('palavraCorreta').textContent = palavra;
         document.getElementById('modalFimDeJogo').style.display = 'flex';
         fimDeJogo = true;
-
+    
+        // 🎵 Toca o som de fim de jogo
+        const audioFim = document.getElementById('audioFimDeJogo');
+        if (audioFim) {
+            audioFim.currentTime = 0;
+            audioFim.play().catch(err => console.warn("Erro ao tocar áudio de fim de jogo:", err));
+        }
+    
         setTimeout(() => {
             document.getElementById('modalFimDeJogo').style.display = 'none';
             escolherPalavra();
         }, 5000);
     }
+    
 }
 
 function destacarSilabas() {
@@ -222,16 +235,58 @@ function destacarSilabas() {
         proximaPalavraOuNivel();
         return;
     }
+
     const wordDisplay = document.getElementById('wordDisplay');
-    wordDisplay.innerHTML = palavraAtual.silabas.map(s => `<span style="color:#764ba2;font-weight:bold;font-size:1.3em;">${s}</span>`).join('<span style="color:#333;font-size:1.2em;">-</span>');
+    wordDisplay.innerHTML = ''; // Limpa o conteúdo anterior
+
+    const silabas = palavraAtual.silabas;
+    const tempoEntre = 1000; // tempo entre cada sílaba em ms
+
+    silabas.forEach((s, index) => {
+        setTimeout(() => {
+            const span = document.createElement('span');
+            span.textContent = s;
+            span.style.color = '#764ba2';
+            span.style.fontWeight = 'bold';
+            span.style.fontSize = '1.3em';
+            span.classList.add('zoom');
+
+            wordDisplay.appendChild(span);
+
+            // Adiciona separador "-" (exceto na última sílaba)
+            if (index < silabas.length - 1) {
+                const separador = document.createElement('span');
+                separador.textContent = '-';
+                separador.style.color = '#333';
+                separador.style.fontSize = '1.2em';
+                wordDisplay.appendChild(separador);
+            }
+
+            // Remove a classe de zoom após 0.6s (ou conforme sua transição)
+            setTimeout(() => {
+                span.classList.remove('zoom');
+            }, 600);
+        }, index * tempoEntre);
+    });
+
+    // Aguarda tempo total + 4s antes de avançar
+    const tempoFinal = silabas.length * tempoEntre + 4000;
     setTimeout(() => {
         proximaPalavraOuNivel();
-    }, 5000);
+    }, tempoFinal);
 }
 
 function mostrarPopupNivel(nivel) {
     document.getElementById('popupNivelNumero').textContent = `Nível ${nivel}!`;
     document.getElementById('popupNivel').style.display = 'flex';
+
+    // Tocar áudio de avanço de nível
+    const audio = document.getElementById('audioAvancoNivel');
+    if (audio) {
+        audio.currentTime = 0; // Reinicia o áudio caso já tenha sido tocado antes
+        audio.play();
+    }
+
     setTimeout(() => {
         document.getElementById('popupNivel').style.display = 'none';
         escolherPalavra();

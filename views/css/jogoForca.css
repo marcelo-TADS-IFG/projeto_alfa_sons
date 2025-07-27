@@ -355,9 +355,11 @@ body {
 }
 .zoom {
     transform: scale(1.6);
-    transition: transform 0.3s ease;
-    color: rgba(6, 2, 29, 1); /* TEMPORÁRIO para debug visual */
-  }  
+    transition: transform 0.6s ease, text-shadow 0.6s ease;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    color: rgba(6, 2, 29, 1); /* opcional */
+  }
+  
   
 
   
