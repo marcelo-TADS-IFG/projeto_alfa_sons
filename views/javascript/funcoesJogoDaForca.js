@@ -18,13 +18,8 @@ let pontosAluno = 0; // Pontos do aluno
 let estadoAnterior = [];
 
 
-function pronunciarPalavra(texto) {
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(texto);
-        utterance.lang = 'pt-BR';
-        window.speechSynthesis.speak(utterance);
-    }
-}
+ServicoDeAudio.pronunciarPalavra(palavra);
+
 
 async function fetchPalavras() {
     try {
@@ -181,7 +176,7 @@ function checarFimDeJogo() {
 
         // Espera 1 segundo antes de mostrar o popup
         setTimeout(() => {
-            pronunciarPalavra(palavra); // fala imediatamente
+            ServicoDeAudio.pronunciarPalavra(palavra); // fala imediatamente
 
             document.getElementById('popupImagem').src = imagem;
             document.getElementById('popupPalavra').textContent = palavra;

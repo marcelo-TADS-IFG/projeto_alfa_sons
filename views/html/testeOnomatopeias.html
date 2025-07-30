@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Gerador de Onomatopeias</title>
+  <title>Testar Áudio da Palavra</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,88 +11,49 @@
       padding-top: 80px;
     }
 
-    #letra {
-      font-size: 120px;
-      transition: transform 0.3s ease;
-      display: inline-block;
-    }
-
-    .zoom {
-      transform: scale(1.5);
+    #palavra {
+      font-size: 50px;
+      margin-top: 30px;
     }
 
     input {
       font-size: 30px;
-      width: 80px;
+      width: 200px;
       text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <h1>Gerador de Onomatopeias</h1>
-  <p>Digite uma letra e veja o som onomatopeico!</p>
+  <h1>Testar Áudio da Palavra</h1>
+  <p>Digite uma palavra para testar o som:</p>
 
-  <input type="text" id="entradaLetra" maxlength="1" placeholder="Digite uma letra" title="Digite uma letra" />
-  <button onclick="mostrarLetra()">Tocar</button>
+  <input type="text" id="entradaPalavra" placeholder="Digite a palavra" title="Digite a palavra" />
+  <button onclick="tocarAudio()">Tocar</button>
 
-  <div id="letra">_</div>
+  <div id="palavra">_</div>
+
+  <audio id="audioPlayer" preload="auto"></audio>
 
   <script>
-    const onomatopeias = {
-      a: ['ahh', 'aaa'],
-      b: ['buuu', 'bam'],
-      c: ['crac', 'clac'],
-      d: ['dum', 'dadum'],
-      e: ['eee', 'éh'],
-      f: ['fuuu'],
-      g: ['grr'],
-      h: ['haa'],
-      i: ['iii'],
-      j: ['juh'],
-      k: ['ka!'],
-      l: ['lah'],
-      m: ['muu'],
-      n: ['nah'],
-      o: ['ohh'],
-      p: ['pá!', 'pum'],
-      q: ['quá'],
-      r: ['rrr'],
-      s: ['sss'],
-      t: ['tum'],
-      u: ['uuu'],
-      v: ['vuum'],
-      w: ['wau'],
-      x: ['xiii'],
-      y: ['yey'],
-      z: ['zum']
-    };
+    function tocarAudio() {
+      const entrada = document.getElementById('entradaPalavra');
+      const palavra = entrada.value.trim().toLowerCase();
+      const div = document.getElementById('palavra');
+      const audio = document.getElementById('audioPlayer');
 
-    function escolherOnomatopeia(letra) {
-      const sons = onomatopeias[letra.toLowerCase()];
-      if (!sons) return letra;
-      return sons[Math.floor(Math.random() * sons.length)];
-    }
+      if (!palavra) return;
 
-    function mostrarLetra() {
-      const entrada = document.getElementById('entradaLetra');
-      const letra = entrada.value.trim().toLowerCase();
-      if (!letra || letra.length !== 1 || !/[a-z]/.test(letra)) return;
+      div.textContent = palavra;
 
-      const onoma = escolherOnomatopeia(letra);
-      const div = document.getElementById('letra');
-      div.textContent = letra.toUpperCase();
+      // Caminho para a pasta palavrasN_2
+      const caminho = `../../audios/audioPalavras/palavrasN_3/${palavra}.mp3`;
 
-      // animação zoom
-      div.classList.add('zoom');
-      setTimeout(() => div.classList.remove('zoom'), 300);
-
-      // falar o som
-      const fala = new SpeechSynthesisUtterance(onoma);
-      fala.lang = 'pt-BR';
-      fala.pitch = 1.3;
-      fala.rate = 0.9;
-      speechSynthesis.speak(fala);
+      audio.src = caminho;
+      audio.play().catch(erro => {
+        alert("Erro ao tocar áudio. Verifique se o arquivo existe.");
+        console.error("Erro ao tocar áudio:", erro);
+      });
     }
   </script>
 
