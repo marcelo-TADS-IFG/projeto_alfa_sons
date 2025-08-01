@@ -20,7 +20,6 @@ let estadoAnterior = [];
 
 ServicoDeAudio.pronunciarPalavra(palavra);
 
-
 async function fetchPalavras() {
     try {
         const response = await fetch('http://localhost:3000/palavras');
@@ -196,7 +195,7 @@ function checarFimDeJogo() {
                 document.getElementById('popupParabens').style.display = 'none';
                 destacarSilabas();
             }, 5000);
-        }, 2000); // espera 1 segundo antes de mostrar o popup
+        }, 2000); // espera 2 segundo antes de mostrar o popup
 
         fimDeJogo = true;
         acertosNoNivel++;
@@ -235,7 +234,7 @@ function destacarSilabas() {
     wordDisplay.innerHTML = ''; // Limpa o conteúdo anterior
 
     const silabas = palavraAtual.silabas;
-    const tempoEntre = 1000; // tempo entre cada sílaba em ms
+    const tempoEntre = 1200; // tempo entre cada sílaba em ms
 
     silabas.forEach((s, index) => {
         setTimeout(() => {
@@ -257,14 +256,22 @@ function destacarSilabas() {
                 wordDisplay.appendChild(separador);
             }
 
-            // Remove a classe de zoom após 0.6s (ou conforme sua transição)
+            // Remove o efeito de zoom após 0.6s
             setTimeout(() => {
                 span.classList.remove('zoom');
             }, 600);
+
+            // Toca o áudio correspondente à sílaba
+            const inicial = s[0].toLowerCase();
+            const caminho = `../../audios/audioSilabas/${inicial}/${s.toLowerCase()}.mp3`;
+            const audio = new Audio(caminho);
+
+            audio.play();
+
         }, index * tempoEntre);
     });
 
-    // Aguarda tempo total + 4s antes de avançar
+    // Aguarda tempo total + 4s antes de avançar para a próxima palavra
     const tempoFinal = silabas.length * tempoEntre + 4000;
     setTimeout(() => {
         proximaPalavraOuNivel();

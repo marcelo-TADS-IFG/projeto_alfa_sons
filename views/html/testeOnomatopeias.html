@@ -21,22 +21,30 @@
       width: 200px;
       text-align: center;
     }
+
+    button {
+      margin: 10px;
+      font-size: 20px;
+      padding: 5px 15px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Testar Áudio da Palavra</h1>
-  <p>Digite uma palavra para testar o som:</p>
+  <h1>Testar Áudio</h1>
+  <p>Digite uma palavra ou sílaba:</p>
 
-  <input type="text" id="entradaPalavra" placeholder="Digite a palavra" title="Digite a palavra" />
-  <button onclick="tocarAudio()">Tocar</button>
+  <input type="text" id="entradaPalavra" placeholder="Digite aqui" title="Digite uma palavra ou sílaba" />
+  <br>
+  <button onclick="tocarAudioPalavra()">Tocar Palavra</button>
+  <button onclick="tocarAudioSilaba()">Tocar Sílaba</button>
 
   <div id="palavra">_</div>
 
   <audio id="audioPlayer" preload="auto"></audio>
 
   <script>
-    function tocarAudio() {
+    function tocarAudioPalavra() {
       const entrada = document.getElementById('entradaPalavra');
       const palavra = entrada.value.trim().toLowerCase();
       const div = document.getElementById('palavra');
@@ -46,13 +54,35 @@
 
       div.textContent = palavra;
 
-      // Caminho para a pasta palavrasN_2
-      const caminho = `../../audios/audioPalavras/palavrasN_3/${palavra}.mp3`;
+      const caminho = `../../audios/audioPalavras/palavrasN_1/${palavra}.mp3`;
 
       audio.src = caminho;
       audio.play().catch(erro => {
-        alert("Erro ao tocar áudio. Verifique se o arquivo existe.");
-        console.error("Erro ao tocar áudio:", erro);
+        alert("Erro ao tocar áudio da palavra. Verifique se o arquivo existe.");
+        console.error("Erro ao tocar áudio da palavra:", erro);
+      });
+    }
+
+    function tocarAudioSilaba() {
+      const entrada = document.getElementById('entradaPalavra');
+      const silaba = entrada.value.trim().toLowerCase();
+      const div = document.getElementById('palavra');
+      const audio = document.getElementById('audioPlayer');
+
+      if (!silaba || silaba.length < 2) {
+        alert("Digite uma sílaba com pelo menos duas letras.");
+        return;
+      }
+
+      div.textContent = silaba;
+
+      const inicial = silaba[0]; // primeira letra para a pasta
+      const caminho = `../../audios/audioSilabas/${inicial}/${silaba}.mp3`;
+
+      audio.src = caminho;
+      audio.play().catch(erro => {
+        alert("Erro ao tocar áudio da sílaba. Verifique se o arquivo existe.");
+        console.error("Erro ao tocar áudio da sílaba:", erro);
       });
     }
   </script>
