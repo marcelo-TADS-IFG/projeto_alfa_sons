@@ -194,7 +194,7 @@ function checarFimDeJogo() {
             setTimeout(() => {
                 document.getElementById('popupParabens').style.display = 'none';
                 destacarSilabas();
-            }, 5000);
+            }, 3000);
         }, 2000); // espera 2 segundo antes de mostrar o popup
 
         fimDeJogo = true;
@@ -223,7 +223,7 @@ function checarFimDeJogo() {
     }
     
 }
-
+/*
 function destacarSilabas() {
     if (!palavraAtual || !palavraAtual.silabas) {
         proximaPalavraOuNivel();
@@ -261,9 +261,10 @@ function destacarSilabas() {
                 span.classList.remove('zoom');
             }, 600);
 
-            // Toca o áudio correspondente à sílaba
-            const inicial = s[0].toLowerCase();
-            const caminho = `../../audios/audioSilabas/${inicial}/${s.toLowerCase()}.mp3`;
+            // Normaliza a sílaba e toca o áudio
+            const silabaNormalizada = normalizarTexto(s);
+            const inicial = silabaNormalizada[0];
+            const caminho = `../../audios/audioSilabas/${inicial}/${silabaNormalizada}.mp3`;
             const audio = new Audio(caminho);
 
             audio.play();
@@ -276,6 +277,50 @@ function destacarSilabas() {
     setTimeout(() => {
         proximaPalavraOuNivel();
     }, tempoFinal);
+}*/
+
+async function destacarSilabas() {
+    if (!palavraAtual || !palavraAtual.silabas || !palavraAtual.audio_silabas) {
+        proximaPalavraOuNivel();
+        return;
+    }
+
+    const wordDisplay = document.getElementById('wordDisplay');
+    wordDisplay.innerHTML = ''; // Limpa o conteúdo anterior
+
+    const silabas = palavraAtual.silabas;
+
+    // callback para exibir a sílaba correspondente
+    const mostrarSilaba = (i) => {
+        const s = silabas[i];
+        const span = document.createElement('span');
+        span.textContent = s;
+        span.style.color = '#764ba2';
+        span.style.fontWeight = 'bold';
+        span.style.fontSize = '1.3em';
+        span.classList.add('zoom');
+        wordDisplay.appendChild(span);
+
+        if (i < silabas.length - 1) {
+            const separador = document.createElement('span');
+            separador.textContent = '-';
+            separador.style.color = '#333';
+            separador.style.fontSize = '1.2em';
+            wordDisplay.appendChild(separador);
+        }
+
+        setTimeout(() => {
+            span.classList.remove('zoom');
+        }, 600);
+    };
+
+    // 🔊 Agora tudo fica sincronizado e organizado
+    await ServicoDeAudio.pronunciarSilabasSincronizado(palavraAtual.audio_silabas, mostrarSilaba, 300);
+
+    // Aguarda 3s e vai para a próxima
+    setTimeout(() => {
+        proximaPalavraOuNivel();
+    }, 2000);
 }
 
 function mostrarPopupNivel(nivel) {

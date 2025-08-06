@@ -1,10 +1,11 @@
 class Palavra {
-  constructor({ texto, nivel, dica, imagem, silabas }) {
+  constructor({ texto, nivel, dica, silabas, audio_silabas, imagem }) {
     this.texto = texto;
     this.nivel = nivel;
     this.dica = dica;
-    this.imagem = imagem;
     this.silabas = silabas;
+    this.audio_silabas = audio_silabas; // novo campo
+    this.imagem = imagem;
   }
 
   getTexto() {
@@ -26,6 +27,10 @@ class Palavra {
   getSilabas() {
     return this.silabas;
   }
+
+  getAudioSilabas() {
+    return this.audio_silabas;
+  }
 }
 
-module.exports = Palavra; 
+module.exports = Palavra;

@@ -30,6 +30,11 @@ const palavraController = require('../controllers/palavraController');
  *           type: array
  *           items:
  *             type: string
+ *         audio_silabas:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: "Lista com os nomes dos arquivos de áudio das sílabas (ex: ['lo.mp3', 'bo_f.mp3'])"
  * /palavras:
  *   get:
  *     summary: Lista todas as palavras
@@ -43,23 +48,7 @@ const palavraController = require('../controllers/palavraController');
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                   texto:
- *                     type: string
- *                   nivel:
- *                     type: integer
- *                   dica:
- *                     type: string
- *                   imagem:
- *                     type: string
- *                     description: Caminho ou URL da imagem (exemplo /images/lobo.png)
- *                   silabas:
- *                     type: array
- *                     items:
- *                       type: string
+ *                 $ref: '#/components/schemas/Palavra'
  *   post:
  *     summary: Cadastra uma nova palavra
  *     tags:
@@ -69,32 +58,7 @@ const palavraController = require('../controllers/palavraController');
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - texto
- *               - nivel
- *               - dica
- *               - imagem
- *               - silabas
- *             properties:
- *               texto:
- *                 type: string
- *                 example: abacaxi
- *               nivel:
- *                 type: integer
- *                 example: 1
- *               dica:
- *                 type: string
- *                 example: Fruta tropical
- *               imagem:
- *                 type: string
- *                 description: Caminho ou URL da imagem (exemplo /images/lobo.png)
- *                 example: /images/abacaxi.png
- *               silabas:
- *                 type: array
- *                 items:
- *                   type: string
- *                 example: ["a", "ba", "ca", "xi"]
+ *             $ref: '#/components/schemas/Palavra'
  *     responses:
  *       201:
  *         description: Palavra adicionada!
@@ -120,23 +84,7 @@ const palavraController = require('../controllers/palavraController');
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                   texto:
- *                     type: string
- *                   nivel:
- *                     type: integer
- *                   dica:
- *                     type: string
- *                   imagem:
- *                     type: string
- *                     description: Caminho ou URL da imagem (exemplo /images/lobo.png)
- *                   silabas:
- *                     type: array
- *                     items:
- *                       type: string
+ *                 $ref: '#/components/schemas/Palavra'
  * /palavras/aleatoria/{nivel}:
  *   get:
  *     summary: Busca uma palavra aleatória por nível
@@ -155,23 +103,7 @@ const palavraController = require('../controllers/palavraController');
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                 texto:
- *                   type: string
- *                 nivel:
- *                   type: integer
- *                 dica:
- *                   type: string
- *                 imagem:
- *                   type: string
- *                   description: Caminho ou URL da imagem (exemplo /images/lobo.png)
- *                 silabas:
- *                   type: array
- *                   items:
- *                     type: string
+ *               $ref: '#/components/schemas/Palavra'
  *       404:
  *         description: Nenhuma palavra encontrada para este nível
  * /palavras/{id}:
@@ -205,6 +137,11 @@ const palavraController = require('../controllers/palavraController');
  *                 type: array
  *                 items:
  *                   type: string
+ *               audio_silabas:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: "Lista com os nomes dos arquivos de áudio das sílabas (ex: ['lo.mp3', 'bo_f.mp3'])"
  *     responses:
  *       200:
  *         description: Palavra atualizada com sucesso!
@@ -228,6 +165,7 @@ const palavraController = require('../controllers/palavraController');
  *       404:
  *         description: Palavra não encontrada
  */
+
 // Listar todas as palavras
 router.get('/', palavraController.listarPalavras);
 

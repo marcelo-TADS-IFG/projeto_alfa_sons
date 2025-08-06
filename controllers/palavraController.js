@@ -37,15 +37,18 @@ const buscarAleatoriaPorNivel = async (req, res) => {
 
 const criarPalavra = async (req, res) => {
   try {
-    const { texto, nivel, dica, imagem, silabas } = req.body;
+    const { texto, nivel, dica, silabas, audio_silabas, imagem } = req.body;
+
     // Validar campos obrigatórios
     if (!texto || !nivel || !dica || !silabas) {
       return res.status(400).json({ 
         error: 'Campos obrigatórios: texto, nivel, dica, silabas' 
       });
     }
-    // Não há mais validação de Base64, imagem é só caminho/URL
-    const novaPalavra = new Palavra({ texto, nivel, dica, imagem, silabas });
+
+    // Cria a nova palavra com ou sem áudio
+    const novaPalavra = new Palavra({ texto, nivel, dica, silabas, audio_silabas, imagem });
+
     const palavraCriada = await palavraDAO.criar(novaPalavra);
     res.status(201).json(palavraCriada);
   } catch (err) {

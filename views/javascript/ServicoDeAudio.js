@@ -11,17 +11,21 @@ class ServicoDeAudio {
     ServicoDeAudio._tocarAudio(caminho);
   }
 
-  static pronunciarSilabas(silabas) {
-    const silabasNormalizadas = silabas.map(s => ServicoDeAudio._normalizar(s));
-    ServicoDeAudio._tocarSilabasEmSequencia(silabasNormalizadas);
-  }
+  static async pronunciarSilabasSincronizado(nomesDosArquivos, callbackPorSilaba, pausa = 1000) {
+    for (let i = 0; i < nomesDosArquivos.length; i++) {
+      const nomeArquivo = nomesDosArquivos[i];
+      const letraInicial = nomeArquivo.charAt(0).toLowerCase();
+      const caminho = `../../audios/audioSilabas/${letraInicial}/${nomeArquivo}.mp3`;
 
-  static async _tocarSilabasEmSequencia(silabas) {
-    for (const silaba of silabas) {
-      const inicial = silaba[0].toLowerCase();
-      const caminho = `../../audios/silabas/${inicial}/${silaba}.mp3`;
+      // ⏱️ Mostra a sílaba no momento certo
+      if (callbackPorSilaba) {
+        callbackPorSilaba(i);
+      }
 
       await ServicoDeAudio._tocarAudioAsync(caminho);
+
+      // Pequena pausa entre as sílabas
+      await new Promise(resolve => setTimeout(resolve, pausa));
     }
   }
 
