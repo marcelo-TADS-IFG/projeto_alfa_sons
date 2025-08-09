@@ -11,7 +11,7 @@ class ServicoDeAudio {
     ServicoDeAudio._tocarAudio(caminho);
   }
 
-  static async pronunciarSilabasSincronizado(nomesDosArquivos, callbackPorSilaba, pausa = 1000) {
+  static async pronunciarSilabasSincronizado(nomesDosArquivos, callbackPorSilaba, pausa = 3000) {
     for (let i = 0; i < nomesDosArquivos.length; i++) {
       const nomeArquivo = nomesDosArquivos[i];
       const letraInicial = nomeArquivo.charAt(0).toLowerCase();

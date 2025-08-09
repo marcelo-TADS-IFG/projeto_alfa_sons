@@ -194,7 +194,7 @@ function checarFimDeJogo() {
             setTimeout(() => {
                 document.getElementById('popupParabens').style.display = 'none';
                 destacarSilabas();
-            }, 3000);
+            }, 5000);
         }, 2000); // espera 2 segundo antes de mostrar o popup
 
         fimDeJogo = true;
@@ -315,12 +315,12 @@ async function destacarSilabas() {
     };
 
     // 🔊 Agora tudo fica sincronizado e organizado
-    await ServicoDeAudio.pronunciarSilabasSincronizado(palavraAtual.audio_silabas, mostrarSilaba, 300);
+    await ServicoDeAudio.pronunciarSilabasSincronizado(palavraAtual.audio_silabas, mostrarSilaba, 500);
 
     // Aguarda 3s e vai para a próxima
     setTimeout(() => {
         proximaPalavraOuNivel();
-    }, 2000);
+    }, 4000);
 }
 
 function mostrarPopupNivel(nivel) {

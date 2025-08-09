@@ -3,7 +3,7 @@
 Jogo da Forca Educacional com Progressão de Dificuldade
 
 ## Descrição
-O Alfa Sons é um jogo da forca voltado para o público infantil, com progressão de dificuldade, apoio sonoro e reforço fonológico, inspirado no método das onomatopeias de Sandra Puliezi.
+O EduForca é um jogo da forca voltado para o público infantil, com progressão de dificuldade, apoio sonoro e reforço fonológico, inspirado no método das onomatopeias de Sandra Puliezi.
 
 ## Funcionalidades
 - Cadastro e gerenciamento de alunos
@@ -33,12 +33,23 @@ O Alfa Sons é um jogo da forca voltado para o público infantil, com progressã
 
 ## Estrutura de Pastas
 ```
-models/         # Classes de dados (Aluno, BancoDeAlunos)
-controllers/    # Lógica de negócio (alunoController)
-dao/            # Conexão com o MongoDB
-routes/         # Rotas Express (alunoRoutes)
-views/          # (Para componentes React)
-app.js          # Arquivo principal do servidor
+app.js                      # Arquivo principal do servidor
+package.json                # Dependências do projeto
+controllers/                # Lógica de negócio (alunoController, palavraController)
+dao/                        # Conexão e acesso ao MongoDB (mongoConnection, palavraDAO)
+models/                     # Classes de dados (Aluno, Palavra, BancoDeAlunos, BancoDePalavras)
+routes/                     # Rotas Express (alunoRoutes, palavraRoutes)
+scripts/                    # Scripts utilitários para popular/adicionar palavras
+views/
+  ├── html/                 # Páginas HTML do frontend (cadastroAlunos, selecaoAluno, jogoForca, etc)
+  ├── css/                  # Arquivos de estilo CSS
+  └── javascript/           # Scripts JS do frontend (funcoesJogoDaForca, ServicoDeAudio)
+images/                     # Imagens de recompensa exibidas no jogo
+imagemForca/                # Imagens da forca (forca.svg, forca-1.svg, ...)
+audios/                     # Áudios do jogo (palavras, sílabas, letras, efeitos)
+.vscode/                    # Configurações do VS Code
+README.md                   # Documentação principal do projeto
+README-IMAGENS.md           # Documentação sobre o sistema
 ```
 
 ## Autor
