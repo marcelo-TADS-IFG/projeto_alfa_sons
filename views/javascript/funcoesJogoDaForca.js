@@ -38,10 +38,10 @@ async function buscarPalavraAleatoriaDoNivel() {
     try {
         let tentativasSorteio = 0;
         let sorteada;
-        const maxTentativas = 15; // Evita loop infinito
+        const maxTentativas = 18; // Evita loop infinito
 
         do {
-            const response = await fetch(`http://localhost:3000/palavras/aleatoria/${nivelAtual}`);
+            const response = await fetch(`http://localhost:3000/palavras/aleatoria/${3}`);
             if (!response.ok) throw new Error('Nenhuma palavra encontrada para este nível');
             sorteada = await response.json();
             tentativasSorteio++;
@@ -194,7 +194,7 @@ function checarFimDeJogo() {
             setTimeout(() => {
                 document.getElementById('popupParabens').style.display = 'none';
                 destacarSilabas();
-            }, 5000);
+            }, 3000);
         }, 2000); // espera 2 segundo antes de mostrar o popup
 
         fimDeJogo = true;
@@ -320,7 +320,7 @@ async function destacarSilabas() {
     // Aguarda 3s e vai para a próxima
     setTimeout(() => {
         proximaPalavraOuNivel();
-    }, 4000);
+    }, 2000);
 }
 
 function mostrarPopupNivel(nivel) {
@@ -349,7 +349,7 @@ function atualizarHeaderAluno() {
 }
 
 function proximaPalavraOuNivel() {
-    if (acertosNoNivel >= 3 && nivelAtual < NIVEL_MAXIMO) {
+    if (acertosNoNivel >= 18 && nivelAtual < NIVEL_MAXIMO) {
         nivelAtual++;
         acertosNoNivel = 0;
         atualizarHeaderAluno();
