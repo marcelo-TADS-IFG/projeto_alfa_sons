@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'views')));
 
 // Rota para servir a tela de cadastro como página inicial
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'html', 'cadastroAlunos.html'));
+  res.sendFile(path.join(__dirname, 'views', 'html', 'paginaEduForca.html'));
 });
 
 // Rota para seleção de aluno

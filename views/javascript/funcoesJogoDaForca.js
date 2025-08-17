@@ -41,7 +41,7 @@ async function buscarPalavraAleatoriaDoNivel() {
         const maxTentativas = 18; // Evita loop infinito
 
         do {
-            const response = await fetch(`http://localhost:3000/palavras/aleatoria/${3}`);
+            const response = await fetch(`http://localhost:3000/palavras/aleatoria/${4}`);
             if (!response.ok) throw new Error('Nenhuma palavra encontrada para este nível');
             sorteada = await response.json();
             tentativasSorteio++;
@@ -194,8 +194,8 @@ function checarFimDeJogo() {
             setTimeout(() => {
                 document.getElementById('popupParabens').style.display = 'none';
                 destacarSilabas();
-            }, 3000);
-        }, 2000); // espera 2 segundo antes de mostrar o popup
+            }, 2000);
+        }, 2000); // espera 3 segundo antes de mostrar o popup
 
         fimDeJogo = true;
         acertosNoNivel++;
@@ -223,61 +223,6 @@ function checarFimDeJogo() {
     }
     
 }
-/*
-function destacarSilabas() {
-    if (!palavraAtual || !palavraAtual.silabas) {
-        proximaPalavraOuNivel();
-        return;
-    }
-
-    const wordDisplay = document.getElementById('wordDisplay');
-    wordDisplay.innerHTML = ''; // Limpa o conteúdo anterior
-
-    const silabas = palavraAtual.silabas;
-    const tempoEntre = 1200; // tempo entre cada sílaba em ms
-
-    silabas.forEach((s, index) => {
-        setTimeout(() => {
-            const span = document.createElement('span');
-            span.textContent = s;
-            span.style.color = '#764ba2';
-            span.style.fontWeight = 'bold';
-            span.style.fontSize = '1.3em';
-            span.classList.add('zoom');
-
-            wordDisplay.appendChild(span);
-
-            // Adiciona separador "-" (exceto na última sílaba)
-            if (index < silabas.length - 1) {
-                const separador = document.createElement('span');
-                separador.textContent = '-';
-                separador.style.color = '#333';
-                separador.style.fontSize = '1.2em';
-                wordDisplay.appendChild(separador);
-            }
-
-            // Remove o efeito de zoom após 0.6s
-            setTimeout(() => {
-                span.classList.remove('zoom');
-            }, 600);
-
-            // Normaliza a sílaba e toca o áudio
-            const silabaNormalizada = normalizarTexto(s);
-            const inicial = silabaNormalizada[0];
-            const caminho = `../../audios/audioSilabas/${inicial}/${silabaNormalizada}.mp3`;
-            const audio = new Audio(caminho);
-
-            audio.play();
-
-        }, index * tempoEntre);
-    });
-
-    // Aguarda tempo total + 4s antes de avançar para a próxima palavra
-    const tempoFinal = silabas.length * tempoEntre + 4000;
-    setTimeout(() => {
-        proximaPalavraOuNivel();
-    }, tempoFinal);
-}*/
 
 async function destacarSilabas() {
     if (!palavraAtual || !palavraAtual.silabas || !palavraAtual.audio_silabas) {
@@ -320,7 +265,7 @@ async function destacarSilabas() {
     // Aguarda 3s e vai para a próxima
     setTimeout(() => {
         proximaPalavraOuNivel();
-    }, 2000);
+    }, 4000);
 }
 
 function mostrarPopupNivel(nivel) {
@@ -349,7 +294,7 @@ function atualizarHeaderAluno() {
 }
 
 function proximaPalavraOuNivel() {
-    if (acertosNoNivel >= 18 && nivelAtual < NIVEL_MAXIMO) {
+    if (acertosNoNivel >= 15 && nivelAtual < NIVEL_MAXIMO) {
         nivelAtual++;
         acertosNoNivel = 0;
         atualizarHeaderAluno();

@@ -32,6 +32,7 @@
             </div>
         </div>
     </div>
+
     <div class="container">
         <div class="icon">🎲</div>
         <div class="logo">🎮 EduForca</div>
@@ -44,6 +45,7 @@
         <div id="teclado" class="teclado"></div>
         <div id="mensagem" class="mensagem"></div>
     </div>
+
     <!-- Popup de Parabéns -->
     <div id="popupParabens" class="popup-parabens" style="display:none;">
         <div class="popup-content">
@@ -52,6 +54,7 @@
             <div id="popupPalavra" class="popup-palavra"></div>
         </div>
     </div>
+
     <!-- Popup de Avanço de Nível -->
     <div id="popupNivel" class="popup-nivel" style="display:none;">
         <div class="popup-nivel-content">
@@ -60,12 +63,14 @@
             <div id="popupNivelNumero" class="popup-nivel-nivel"></div>
         </div>
     </div>
+
     <!-- Modal de Fim de Jogo -->
     <div id="modalFimDeJogo" class="modal-fimdejogo" style="display:none;">
         <div class="modal-fimdejogo-content">
             <div>❌ Fim de jogo! A palavra era: <span id="palavraCorreta"></span></div>
         </div>
     </div>
+
     <!-- Modal de Sair -->
     <div id="modalSair" class="modal-sair" style="display:none;">
         <div class="modal-sair-content">
@@ -79,77 +84,16 @@
             </div>
         </div>
     </div>
+
+    <!-- Funções principais do jogo -->
     <script src="/javascript/funcoesJogoDaForca.js"></script>
 
-    <script>
-        // Inicialização do jogo
-        window.onload = () => {
-            nivelAtual = 1;
-            acertosNoNivel = 0;
-            escolherPalavra();
-        };
+    <!-- Nosso JS separado -->
+    <script type="module" src="/javascript/jogoForca.js"></script>
 
-        // Suporte a query de aluno (opcional)
-        function getAlunoFromQuery() {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('aluno')) {
-                try {
-                    return JSON.parse(decodeURIComponent(params.get('aluno')));
-                } catch (e) {
-                    return null;
-                }
-            }
-            return null;
-        }
-
-        const aluno = getAlunoFromQuery();
-        if (aluno) {
-            // Exibe o header do aluno
-            document.getElementById('headerAluno').style.display = 'block';
-            document.getElementById('alunoNome').textContent = `${aluno.nome} ${aluno.sobrenome}`;
-            document.getElementById('alunoTurma').textContent = aluno.turma;
-            document.getElementById('alunoNivel').textContent = nivelAtual;
-            document.getElementById('alunoPontos').textContent = pontosAluno;
-        }
-
-        // Botão Sair
-        const btnSair = document.getElementById('btnSair');
-        const modalSair = document.getElementById('modalSair');
-        const btnConfirmarSair = document.getElementById('btnConfirmarSair');
-        const btnCancelarSair = document.getElementById('btnCancelarSair');
-        const modalSairPontos = document.getElementById('modalSairPontos');
-        const modalSairNivel = document.getElementById('modalSairNivel');
-
-        if (btnSair) {
-            btnSair.onclick = () => {
-                // Atualiza pontos e nível no modal
-                modalSairPontos.textContent = window.pontosAluno !== undefined ? window.pontosAluno : document.getElementById('alunoPontos').textContent;
-                modalSairNivel.textContent = window.nivelAtual !== undefined ? window.nivelAtual : document.getElementById('alunoNivel').textContent;
-                modalSair.style.display = 'flex';
-            };
-        }
-        if (btnCancelarSair) {
-            btnCancelarSair.onclick = () => {
-                modalSair.style.display = 'none';
-            };
-        }
-        if (btnConfirmarSair) {
-            btnConfirmarSair.onclick = () => {
-                window.location.href = '/html/cadastroAlunos.html';
-            };
-        }
-    </script>
-
-    <script type="module">
-        import ServicoDeAudio from '../../javascript/ServicoDeAudio.js';
-      
-        window.ServicoDeAudio = ServicoDeAudio; // Disponibiliza globalmente
-      </script>
-      
     <!-- Audios para o jogo -->
     <audio id="audioAvancoNivel" src="../../audios/audioJogo/avanco_nivel.mp3"></audio>
     <audio id="audioFimDeJogo" src="../../audios/audioJogo/fim_de_jogo.mp3"></audio>
 
 </body>
-
 </html>
