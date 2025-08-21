@@ -64,6 +64,39 @@
         </div>
     </div>
 
+    <!-- Popup Final -->
+    <div id="popupFinal" class="popup-nivel" style="display:none;">
+        <div class="popup-nivel-content">
+            <div class="popup-nivel-emoji">🎉</div>
+            <div class="popup-nivel-msg">Incrível!! Você concluiu o jogo.</div>
+            <div class="popup-nivel-nivel">Deseja recomeçar?</div>
+            <div style="margin-top:20px; display:flex; gap:15px;">
+                <button onclick="reiniciarJogo()" class="btn-recomecar">Recomeçar</button>
+                <button onclick="sairJogo()" class="btn-sair">Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup de sair -->
+    <div class="popup-sair" id="popupSair">
+        <div class="popup-sair-content">
+
+            <!-- Emojis -->
+            <div>
+                <span class="popup-sair-emoji-hand">👋</span>
+                <span class="popup-sair-emoji-wink">😉</span>
+            </div>
+
+            <!-- Mensagem -->
+            <div class="popup-sair-msg">
+                Obrigado por jogar! Até a próxima!
+            </div>
+
+            <!-- Botão -->
+            <button class="popup-sair-btn" onclick="confirmarSair()">OK</button>
+        </div>
+    </div>
+
     <!-- Modal de Fim de Jogo -->
     <div id="modalFimDeJogo" class="modal-fimdejogo" style="display:none;">
         <div class="modal-fimdejogo-content">
@@ -94,6 +127,8 @@
     <!-- Audios para o jogo -->
     <audio id="audioAvancoNivel" src="../../audios/audioJogo/avanco_nivel.mp3"></audio>
     <audio id="audioFimDeJogo" src="../../audios/audioJogo/fim_de_jogo.mp3"></audio>
+    <audio id="audioFinal" src="../../audios/audioJogo/victory.mp3"></audio>
 
 </body>
+
 </html>

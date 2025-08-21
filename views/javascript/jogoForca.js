@@ -9,6 +9,11 @@ window.pontosAluno = window.pontosAluno ?? 0;
 
 const botoes = document.querySelectorAll('.teclado button');
 
+// -------------------- Função utilitária para remover acentos --------------------
+function removerAcentos(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 // -------------------- Inicialização do jogo --------------------
 window.onload = () => {
     if (typeof escolherPalavra === 'function') {
@@ -72,8 +77,19 @@ botoes.forEach(botao => {
     // Evento click (desktop)
     botao.addEventListener('click', () => {
         if (typeof verificarLetra === 'function') {
-            verificarLetra(botao.textContent); // Função do jogo
+            const letraEscolhida = removerAcentos(botao.textContent.toUpperCase());
+            const palavraNormalizada = removerAcentos(palavra.toUpperCase()); // variável 'palavra' vem do jogo
+
+            if (palavraNormalizada.includes(letraEscolhida)) {
+                botao.classList.add('correct'); // feedback visual
+            } else {
+                botao.classList.add('wrong'); // feedback visual
+            }
+
+            verificarLetra(letraEscolhida); 
         }
+
+        botao.disabled = true; // desabilita após o uso
     });
 
     // Eventos touch (tablet/smartphone)

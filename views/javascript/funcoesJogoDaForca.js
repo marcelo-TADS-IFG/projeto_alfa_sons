@@ -16,9 +16,10 @@ const NIVEL_MAXIMO = 5;
 let palavrasExibidas = []; // Armazena palavras já exibidas no nível atual
 let pontosAluno = 0; // Pontos do aluno
 let estadoAnterior = [];
+let jogoFinalizado = false; // controla quando o aluno chegou no nível máximo
+const TEMPO_REVELACAO = 2500; // Tempo de espera entre cada revelação de letra (em ms)
 
-
-ServicoDeAudio.pronunciarPalavra(palavra);
+ServicoDeAudio.pronunciarPalavra(palavra); 
 
 async function fetchPalavras() {
     try {
@@ -38,14 +39,13 @@ async function buscarPalavraAleatoriaDoNivel() {
     try {
         let tentativasSorteio = 0;
         let sorteada;
-        const maxTentativas = 18; // Evita loop infinito
+        const maxTentativas = 15; // Evita loop infinito
 
         do {
-            const response = await fetch(`http://localhost:3000/palavras/aleatoria/${4}`);
+            const response = await fetch(`http://localhost:3000/palavras/aleatoria/${nivelAtual}`);
             if (!response.ok) throw new Error('Nenhuma palavra encontrada para este nível');
             sorteada = await response.json();
             tentativasSorteio++;
-            // Se já exibiu muitas palavras, limpa o array para permitir repetição
             if (tentativasSorteio > maxTentativas || palavrasExibidas.length > 20) {
                 palavrasExibidas = [];
             }
@@ -55,8 +55,8 @@ async function buscarPalavraAleatoriaDoNivel() {
         palavra = sorteada.texto.toUpperCase();
         dica = sorteada.dica;
         imagem = sorteada.imagem.startsWith('http') ? sorteada.imagem : `http://localhost:3000${sorteada.imagem}`;
-        letrasDescobertas = palavra.split("").map(l => l === "-" ? "-" : "_"); // Traços já aparecem
-        tentativas = 0; // Zera as tentativas do jogo
+        letrasDescobertas = palavra.split("").map(l => l === "-" ? "-" : "_");
+        tentativas = 0;
         letrasErradas = [];
         fimDeJogo = false;
         atualizarForca();
@@ -65,7 +65,6 @@ async function buscarPalavraAleatoriaDoNivel() {
         document.getElementById('rewardImage').style.display = 'none';
         document.getElementById('popupParabens').style.display = 'none';
 
-        // Adiciona a palavra ao array de exibidas
         palavrasExibidas.push(sorteada.texto);
 
     } catch (error) {
@@ -98,7 +97,6 @@ function tentarLetra(letra) {
     if (fimDeJogo) return;
     let acertou = false;
 
-    // Salva o estado antes de atualizar
     const letrasAntes = [...letrasDescobertas];
 
     palavra.split("").forEach((l, i) => {
@@ -114,9 +112,7 @@ function tentarLetra(letra) {
         atualizarForca();
     }
 
-    // Passa o estado anterior para comparar dentro de atualizarTela
     atualizarTela(letrasAntes);
-
     checarFimDeJogo();
 }
 
@@ -129,39 +125,62 @@ function atualizarForca() {
 function atualizarTela(letrasAntes = []) {
     const container = document.getElementById('wordDisplay');
     container.innerHTML = '';
-    palavra.split("").forEach((letra, index) => {
+
+    // Sempre renderiza o teclado
+    renderTeclado();
+
+    // Renderiza a palavra inicialmente só com "_" ou letras já conhecidas
+    palavra.split("").forEach((_, index) => {
         const span = document.createElement('span');
         span.id = `letra-${index}`;
         span.className = 'letra-jogo';
-        span.textContent = letrasDescobertas[index];
-
-        // Aplica zoom se essa letra foi revelada nesta rodada
-        if (letrasDescobertas[index] !== "_" && letrasAntes[index] === "_") {
-            span.classList.add('zoom');
-            setTimeout(() => {
-                span.classList.remove('zoom');
-            }, 1300); // 0.3s de entrada + 2s de pausa
-        }
-
+        span.textContent = letrasAntes[index] !== "_" ? letrasDescobertas[index] : "_";
         container.appendChild(span);
         container.append(' ');
     });
 
+    // Verifica se há letras novas para revelar
+    const novasLetras = palavra
+        .split("")
+        .map((letra, index) => ({ letra, index }))
+        .filter(({ index }) => letrasDescobertas[index] !== "_" && letrasAntes[index] === "_");
+
+    if (novasLetras.length > 0) {
+        // Travar teclado sempre que houver revelações
+        travarTeclado();
+
+        let delay = 0;
+        novasLetras.forEach(({ index }, i) => {
+            setTimeout(() => {
+                const span = document.getElementById(`letra-${index}`);
+                span.textContent = letrasDescobertas[index];
+                span.classList.add('zoom');
+                setTimeout(() => span.classList.remove('zoom'), 1300);
+
+                // Se for a última letra revelada, libera após o tempo configurado
+                if (i === novasLetras.length - 1) {
+                    setTimeout(() => {
+                        liberarTeclado();
+                    }, TEMPO_REVELACAO);
+                }
+            }, delay);
+            delay += TEMPO_REVELACAO; // usa a constante
+        });
+    }
+
     document.getElementById('hint').textContent = `Dica: ${dica}`;
-    renderTeclado();
 }
 
-function adicionarLetra(container, letra, index) {
-    const span = document.createElement('span');
-    span.id = `letra-${index}`;
-    span.className = 'letra-jogo';
-    span.textContent = letra;
-    container.appendChild(span);
-    container.append(' ');
+// Bloqueia o teclado sem mudar a cor
+function travarTeclado() {
+    const teclado = document.getElementById('teclado');
+    if (teclado) teclado.classList.add('teclado-bloqueado');
+}
 
-    // Aplica o efeito de zoom
-    span.classList.add('zoom');
-    setTimeout(() => span.classList.remove('zoom'), 300); // ou ajuste para 1300 se quiser acompanhar o CSS
+// Libera o teclado
+function liberarTeclado() {
+    const teclado = document.getElementById('teclado');
+    if (teclado) teclado.classList.remove('teclado-bloqueado');
 }
 
 function checarFimDeJogo() {
@@ -194,8 +213,8 @@ function checarFimDeJogo() {
             setTimeout(() => {
                 document.getElementById('popupParabens').style.display = 'none';
                 destacarSilabas();
-            }, 2000);
-        }, 2000); // espera 3 segundo antes de mostrar o popup
+            }, 5000);
+        }, 5000); // espera 5 segundo antes de mostrar o popup
 
         fimDeJogo = true;
         acertosNoNivel++;
@@ -226,16 +245,15 @@ function checarFimDeJogo() {
 
 async function destacarSilabas() {
     if (!palavraAtual || !palavraAtual.silabas || !palavraAtual.audio_silabas) {
-        proximaPalavraOuNivel();
+        if (!jogoFinalizado) proximaPalavraOuNivel();
         return;
     }
 
     const wordDisplay = document.getElementById('wordDisplay');
-    wordDisplay.innerHTML = ''; // Limpa o conteúdo anterior
+    wordDisplay.innerHTML = '';
 
     const silabas = palavraAtual.silabas;
 
-    // callback para exibir a sílaba correspondente
     const mostrarSilaba = (i) => {
         const s = silabas[i];
         const span = document.createElement('span');
@@ -259,29 +277,26 @@ async function destacarSilabas() {
         }, 600);
     };
 
-    // 🔊 Agora tudo fica sincronizado e organizado
     await ServicoDeAudio.pronunciarSilabasSincronizado(palavraAtual.audio_silabas, mostrarSilaba, 500);
 
-    // Aguarda 3s e vai para a próxima
     setTimeout(() => {
-        proximaPalavraOuNivel();
-    }, 4000);
+        if (!jogoFinalizado) proximaPalavraOuNivel();
+    }, 3000);
 }
 
 function mostrarPopupNivel(nivel) {
     document.getElementById('popupNivelNumero').textContent = `Nível ${nivel}!`;
     document.getElementById('popupNivel').style.display = 'flex';
 
-    // Tocar áudio de avanço de nível
     const audio = document.getElementById('audioAvancoNivel');
     if (audio) {
-        audio.currentTime = 0; // Reinicia o áudio caso já tenha sido tocado antes
+        audio.currentTime = 0;
         audio.play();
     }
 
     setTimeout(() => {
         document.getElementById('popupNivel').style.display = 'none';
-        escolherPalavra();
+        if (!jogoFinalizado) escolherPalavra();
     }, 5000);
 }
 
@@ -293,13 +308,45 @@ function atualizarHeaderAluno() {
     if (headerPontos) headerPontos.textContent = pontosAluno;
 }
 
+function mostrarPopupFinal() {
+    jogoFinalizado = true;
+    const popup = document.getElementById('popupFinal');
+    popup.style.display = 'flex';
+
+    const audio = document.getElementById('audioFinal'); 
+    if (audio) {
+        audio.currentTime = 0;
+        audio.play();
+    }
+}
+
+function reiniciarJogo() {
+    document.getElementById('popupFinal').style.display = 'none';
+    nivelAtual = 1;
+    acertosNoNivel = 0;
+    pontosAluno = 0;
+    jogoFinalizado = false;
+    atualizarHeaderAluno();
+    escolherPalavra();
+}
+
+function sairJogo() {
+    document.getElementById('popupSair').style.display = 'flex';
+}
+
+function confirmarSair() {
+    window.location.href = 'cadastroAlunos.html';
+}
+
 function proximaPalavraOuNivel() {
-    if (acertosNoNivel >= 15 && nivelAtual < NIVEL_MAXIMO) {
+    if (acertosNoNivel >= 3 && nivelAtual < NIVEL_MAXIMO) {
         nivelAtual++;
         acertosNoNivel = 0;
         atualizarHeaderAluno();
         mostrarPopupNivel(nivelAtual);
+    } else if (acertosNoNivel >= 3 && nivelAtual === NIVEL_MAXIMO) {
+        mostrarPopupFinal();
     } else {
-        escolherPalavra();
+        if (!jogoFinalizado) escolherPalavra();
     }
-} 
+}

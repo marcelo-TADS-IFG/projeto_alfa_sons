@@ -1,11 +1,16 @@
 body {
     font-family: 'Comic Sans MS', cursive, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Substituindo o gradiente pela imagem */
+    background-image: url('../images/arvore.jpg');
+    background-size: cover; /* Faz a imagem preencher toda a tela */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat; /* Evita que a imagem se repita */
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 .container {
     background: white;
     border-radius: 25px;
@@ -13,6 +18,7 @@ body {
     padding: 60px 40px;
     text-align: center;
     max-width: 800px;
+    margin-top: 80px; /* unificado */
 }
 .logo {
     font-size: 2.5em;
@@ -58,13 +64,13 @@ body {
 .word-display span {
     display: inline-block;
     transition: transform 0.3s ease;
-  }
-  .letra-jogo {
+}
+.letra-jogo {
     display: inline-block;
     font-weight: bold;
     font-size: 48px;
     transition: transform 0.3s ease;
-  }
+}
 .hint {
     font-size: 1.1em;
     color: #666;
@@ -97,34 +103,14 @@ body {
     color: #eee;
     border: 2px solid #eee;
     cursor: not-allowed;
+    box-shadow: none; /* consolidado */
 }
 
 /* Hover e toque */
-.teclado button:hover,
-.teclado button:active,
+.teclado button:hover:not(:disabled),
+.teclado button:active:not(:disabled),
 .teclado button.touch-active {
-    background: #5566d4;
-    transform: scale(1.15);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-/* Efeito rápido ao clicar (para toque) */
-.teclado button:active {
-    transform: scale(1.15);
-}
-
-/* Botões desabilitados */
-.teclado button:disabled {
-    background: #b3b3b3;
-    color: #eee;
-    border: 2px solid #eee;
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-/* Hover - efeito divertido */
-.teclado button:hover:not(:disabled) {
-    background: #eaac66 0%;
+    background: #eaac66 0%;;
     transform: scale(1.15);
     box-shadow: 0 6px 15px rgba(0,0,0,0.25);
 }
@@ -157,10 +143,10 @@ body {
 /* Animação de shake para erros */
 @keyframes shake {
     0% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-8px); }
-    80% { transform: translateX(8px); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-10px); }
+    80% { transform: translateX(10px); }
     100% { transform: translateX(0); }
 }
 
@@ -239,14 +225,6 @@ body {
 .mensagem.erro.shake {
     animation: shake 0.5s;
 }
-@keyframes shake {
-    0% { transform: translateX(0); }
-    20% { transform: translateX(-10px); }
-    40% { transform: translateX(10px); }
-    60% { transform: translateX(-10px); }
-    80% { transform: translateX(10px); }
-    100% { transform: translateX(0); }
-}
 .popup-nivel {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -285,6 +263,25 @@ body {
     font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif;
     margin-top: 5px;
 }
+.btn-recomecar, .btn-sair {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.btn-recomecar {
+    background-color: #00b894;
+    color: #fff;
+}
+.btn-sair {
+    background-color: #d63031;
+    color: #fff;
+}
+.btn-recomecar:hover, .btn-sair:hover {
+    transform: scale(1.05);
+}
 .modal-fimdejogo {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -309,6 +306,7 @@ body {
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
 }
+
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -317,6 +315,91 @@ body {
     0% { transform: scale(0.8); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
 }
+
+/* Fundo escuro */
+.popup-sair {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+}
+
+/* Caixa principal */
+.popup-sair-content {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+    border-radius: 25px;
+    padding: 40px 50px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    animation: popup-bounce 0.7s;
+}
+
+/* Emoji - mãozinha */
+.popup-sair-emoji-hand {
+    font-size: 3em;
+    margin-bottom: 10px;
+    display: inline-block;
+    animation: wave-hand 1.5s infinite;
+    transform-origin: 70% 70%; /* define o "cotovelo" da mão */
+}
+
+/* Emoji - carinha piscando */
+.popup-sair-emoji-wink {
+    font-size: 3em;
+    margin-left: 10px;
+    display: inline-block;
+    animation: wink-eye 2s infinite;
+}
+
+/* Texto */
+.popup-sair-msg {
+    font-size: 1.8em;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    color: #2d3436;
+    text-shadow: 2px 2px 0 #fff, 0 2px 6px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+}
+
+/* Botão */
+.popup-sair-btn {
+    background: #6c5ce7;
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    font-size: 1.2em;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.popup-sair-btn:hover {
+    background: #341f97;
+}
+
+/* Animação do popup */
+@keyframes popup-bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-10px); }
+}
+
+/* Animação da mão acenando */
+@keyframes wave-hand {
+    0% { transform: rotate(0deg); }
+    20% { transform: rotate(20deg); }
+    40% { transform: rotate(-10deg); }
+    60% { transform: rotate(20deg); }
+    80% { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* Animação do piscar */
+@keyframes wink-eye {
+    0%, 90%, 100% { transform: scale(1); }
+    95% { transform: scale(0.9); } /* simula piscada rápida */
+}
+
 .header-aluno {
     position: fixed;
     top: 0;
@@ -430,12 +513,14 @@ body {
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 }
-.container {
-    margin-top: 80px;
-}
 .zoom {
     transform: scale(1.6);
     transition: transform 0.6s ease, text-shadow 0.6s ease;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
     color: rgba(6, 2, 29, 1); /* opcional */
-  }
+}
+
+/* Bloqueia clique sem mudar aparência */
+.teclado-bloqueado button {
+    pointer-events: none;
+}
