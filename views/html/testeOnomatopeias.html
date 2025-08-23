@@ -16,7 +16,7 @@
       margin-top: 30px;
     }
 
-    input {
+    input[type="text"] {
       font-size: 30px;
       width: 200px;
       text-align: center;
@@ -27,14 +27,31 @@
       font-size: 20px;
       padding: 5px 15px;
     }
+
+    #audioBar {
+      width: 400px;
+      margin-top: 30px;
+    }
+
+    /* Acessibilidade: esconde visualmente o label mas deixa para leitores de tela */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
   </style>
 </head>
 <body>
 
   <h1>Testar Áudio</h1>
-  <p>Digite uma palavra ou sílaba:</p>
+  <label for="entradaPalavra">Digite uma palavra ou sílaba:</label><br>
+  <input type="text" id="entradaPalavra" placeholder="Digite aqui" />
 
-  <input type="text" id="entradaPalavra" placeholder="Digite aqui" title="Digite uma palavra ou sílaba" />
   <br>
   <button onclick="tocarAudioPalavra()">Tocar Palavra</button>
   <button onclick="tocarAudioSilaba()">Tocar Sílaba</button>
@@ -42,13 +59,23 @@
   <div id="palavra">_</div>
 
   <audio id="audioPlayer" preload="auto"></audio>
+  <br>
+
+  <!-- Botão play/pause -->
+  <button id="playPauseBtn" aria-label="Reproduzir">▶️</button>
+
+  <label for="audioBar" class="sr-only">Barra de progresso do áudio</label>
+  <input type="range" id="audioBar" min="0" value="0" step="0.01">
 
   <script>
+    const audio = document.getElementById('audioPlayer');
+    const audioBar = document.getElementById('audioBar');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+
     function tocarAudioPalavra() {
       const entrada = document.getElementById('entradaPalavra');
       const palavra = entrada.value.trim().toLowerCase();
       const div = document.getElementById('palavra');
-      const audio = document.getElementById('audioPlayer');
 
       if (!palavra) return;
 
@@ -57,7 +84,9 @@
       const caminho = `../../audios/audioPalavras/palavrasN_1/${palavra}.mp3`;
 
       audio.src = caminho;
-      audio.play().catch(erro => {
+      audio.play().then(() => {
+        playPauseBtn.textContent = "⏸️";
+      }).catch(erro => {
         alert("Erro ao tocar áudio da palavra. Verifique se o arquivo existe.");
         console.error("Erro ao tocar áudio da palavra:", erro);
       });
@@ -67,7 +96,6 @@
       const entrada = document.getElementById('entradaPalavra');
       const silaba = entrada.value.trim().toLowerCase();
       const div = document.getElementById('palavra');
-      const audio = document.getElementById('audioPlayer');
 
       if (!silaba || silaba.length < 2) {
         alert("Digite uma sílaba com pelo menos duas letras.");
@@ -80,11 +108,46 @@
       const caminho = `../../audios/audioSilabas/${inicial}/${silaba}.mp3`;
 
       audio.src = caminho;
-      audio.play().catch(erro => {
+      audio.play().then(() => {
+        playPauseBtn.textContent = "⏸️";
+      }).catch(erro => {
         alert("Erro ao tocar áudio da sílaba. Verifique se o arquivo existe.");
         console.error("Erro ao tocar áudio da sílaba:", erro);
       });
     }
+
+    // Atualiza a barra conforme o áudio toca
+    audio.addEventListener('timeupdate', () => {
+      audioBar.max = audio.duration || 1;
+      audioBar.value = audio.currentTime;
+    });
+
+    // Permite avançar ou retroceder o áudio pela barra
+    audioBar.addEventListener('input', () => {
+      audio.currentTime = audioBar.value;
+    });
+
+    // Reseta a barra ao carregar novo áudio
+    audio.addEventListener('loadedmetadata', () => {
+      audioBar.max = audio.duration || 1;
+      audioBar.value = 0;
+    });
+
+    // Quando o áudio terminar, reseta botão
+    audio.addEventListener('ended', () => {
+      playPauseBtn.textContent = "▶️";
+    });
+
+    // Play/Pause manual
+    playPauseBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play();
+        playPauseBtn.textContent = "⏸️";
+      } else {
+        audio.pause();
+        playPauseBtn.textContent = "▶️";
+      }
+    });
   </script>
 
 </body>

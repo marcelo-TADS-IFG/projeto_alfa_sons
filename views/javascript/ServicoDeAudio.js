@@ -29,6 +29,25 @@ class ServicoDeAudio {
     }
   }
 
+   static async pronunciarLetras(palavra, callbackPorLetra, pausa = 1000) {
+    const palavraNormalizada = ServicoDeAudio._normalizar(palavra).toLowerCase();
+
+    for (let i = 0; i < palavraNormalizada.length; i++) {
+      const letra = palavraNormalizada.charAt(i);
+      const caminho = `../../audios/onomatopeias/${letra}.mp3`;
+
+      // ⏱️ callback da letra atual
+      if (callbackPorLetra) {
+        callbackPorLetra(i);
+      }
+
+      await ServicoDeAudio._tocarAudioAsync(caminho);
+
+      // Pequena pausa entre os sons das letras
+      await new Promise(resolve => setTimeout(resolve, pausa));
+    }
+  }
+
   static _tocarAudio(caminho) {
     if (ServicoDeAudio._audio) {
       ServicoDeAudio._audio.pause();

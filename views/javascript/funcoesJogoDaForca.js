@@ -122,14 +122,14 @@ function atualizarForca() {
     else img.src = `/imagemForca/forca-${tentativas}.svg`;
 }
 
-function atualizarTela(letrasAntes = []) {
+async function atualizarTela(letrasAntes = []) {
     const container = document.getElementById('wordDisplay');
     container.innerHTML = '';
 
     // Sempre renderiza o teclado
     renderTeclado();
 
-    // Renderiza a palavra inicialmente só com "_" ou letras já conhecidas
+    // Renderiza a palavra com "_" ou letras já conhecidas
     palavra.split("").forEach((_, index) => {
         const span = document.createElement('span');
         span.id = `letra-${index}`;
@@ -139,37 +139,92 @@ function atualizarTela(letrasAntes = []) {
         container.append(' ');
     });
 
-    // Verifica se há letras novas para revelar
+    // Descobre quais letras foram reveladas nessa jogada
     const novasLetras = palavra
         .split("")
         .map((letra, index) => ({ letra, index }))
         .filter(({ index }) => letrasDescobertas[index] !== "_" && letrasAntes[index] === "_");
 
     if (novasLetras.length > 0) {
-        // Travar teclado sempre que houver revelações
         travarTeclado();
 
-        let delay = 0;
-        novasLetras.forEach(({ index }, i) => {
-            setTimeout(() => {
-                const span = document.getElementById(`letra-${index}`);
-                span.textContent = letrasDescobertas[index];
-                span.classList.add('zoom');
-                setTimeout(() => span.classList.remove('zoom'), 1300);
+        for (let i = 0; i < novasLetras.length; i++) {
+            const { letra, index } = novasLetras[i];
+            const span = document.getElementById(`letra-${index}`);
 
-                // Se for a última letra revelada, libera após o tempo configurado
-                if (i === novasLetras.length - 1) {
-                    setTimeout(() => {
-                        liberarTeclado();
-                    }, TEMPO_REVELACAO);
-                }
-            }, delay);
-            delay += TEMPO_REVELACAO; // usa a constante
-        });
+            // Revela a letra na tela
+            span.textContent = letrasDescobertas[index];
+            span.classList.add('zoom');
+
+            // 🎵 toca a onomatopeia específica dessa posição
+            if (palavraAtual.onomatopeias && palavraAtual.onomatopeias[index]) {
+                const onomatopeia = palavraAtual.onomatopeias[index];
+                const caminho = `../../audios/onomatopeias/${onomatopeia}.mp3`;
+                await ServicoDeAudio._tocarAudioAsync(caminho);
+            }
+
+            // Mantém efeito antes de ir para próxima
+            await new Promise(resolve => setTimeout(resolve, TEMPO_REVELACAO));
+            span.classList.remove('zoom');
+        }
+
+        liberarTeclado();
     }
 
     document.getElementById('hint').textContent = `Dica: ${dica}`;
 }
+
+/*
+async function atualizarTela(letrasAntes = []) {
+    const container = document.getElementById('wordDisplay');
+    container.innerHTML = '';
+
+    // Sempre renderiza o teclado
+    renderTeclado();
+
+    // Renderiza a palavra com "_" ou letras já conhecidas
+    palavra.split("").forEach((_, index) => {
+        const span = document.createElement('span');
+        span.id = `letra-${index}`;
+        span.className = 'letra-jogo';
+        span.textContent = letrasAntes[index] !== "_" ? letrasDescobertas[index] : "_";
+        container.appendChild(span);
+        container.append(' ');
+    });
+
+    // Descobre quais letras foram reveladas nessa jogada
+    const novasLetras = palavra
+        .split("")
+        .map((letra, index) => ({ letra, index }))
+        .filter(({ index }) => letrasDescobertas[index] !== "_" && letrasAntes[index] === "_");
+
+    if (novasLetras.length > 0) {
+        travarTeclado();
+
+        // Vamos chamar pronunciarLetras e usar o callback para aplicar os efeitos visuais
+        await ServicoDeAudio.pronunciarLetras(
+            novasLetras.map(n => n.letra).join(""), // passa apenas as letras novas
+            (i) => {
+                const { index } = novasLetras[i];
+                const span = document.getElementById(`letra-${index}`);
+                if (span) {
+                    span.textContent = letrasDescobertas[index];
+                    span.classList.add('zoom');
+
+                    // Remove o efeito depois do tempo de revelação
+                    setTimeout(() => {
+                        span.classList.remove('zoom');
+                    }, TEMPO_REVELACAO);
+                }
+            },
+            TEMPO_REVELACAO // pausa entre cada letra
+        );
+
+        liberarTeclado();
+    }
+
+    document.getElementById('hint').textContent = `Dica: ${dica}`;
+}*/
 
 // Bloqueia o teclado sem mudar a cor
 function travarTeclado() {
@@ -183,6 +238,7 @@ function liberarTeclado() {
     if (teclado) teclado.classList.remove('teclado-bloqueado');
 }
 
+//apos cada tentativa, checa se o jogo terminou
 function checarFimDeJogo() {
     const mensagem = document.getElementById('mensagem');
     const rewardImg = document.getElementById('rewardImage');
@@ -339,7 +395,7 @@ function confirmarSair() {
 }
 
 function proximaPalavraOuNivel() {
-    if (acertosNoNivel >= 3 && nivelAtual < NIVEL_MAXIMO) {
+    if (acertosNoNivel >= 16 && nivelAtual < NIVEL_MAXIMO) {
         nivelAtual++;
         acertosNoNivel = 0;
         atualizarHeaderAluno();
