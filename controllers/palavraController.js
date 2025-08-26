@@ -37,7 +37,7 @@ const buscarAleatoriaPorNivel = async (req, res) => {
 
 const criarPalavra = async (req, res) => {
   try {
-    const { texto, nivel, dica, silabas, audio_silabas, imagem } = req.body;
+    const { texto, nivel, dica, imagem, silabas, audio_silabas, onomatopeias} = req.body;
 
     // Validar campos obrigatórios
     if (!texto || !nivel || !dica || !silabas) {
@@ -46,8 +46,16 @@ const criarPalavra = async (req, res) => {
       });
     }
 
-    // Cria a nova palavra com ou sem áudio
-    const novaPalavra = new Palavra({ texto, nivel, dica, silabas, audio_silabas, imagem });
+    // Cria a nova palavra com ou sem áudio e onomatopeias
+    const novaPalavra = new Palavra({ 
+      texto, 
+      nivel, 
+      dica, 
+      imagem,
+      silabas, 
+      audio_silabas, 
+      onomatopeias, 
+    });
 
     const palavraCriada = await palavraDAO.criar(novaPalavra);
     res.status(201).json(palavraCriada);
@@ -57,6 +65,7 @@ const criarPalavra = async (req, res) => {
   }
 };
 
+/*
 const atualizarPalavra = async (req, res) => {
   const id = req.params.id;
   try {
@@ -65,6 +74,49 @@ const atualizarPalavra = async (req, res) => {
     else res.status(404).json({ error: 'Palavra não encontrada.' });
   } catch (err) {
     res.status(400).json({ error: 'Erro ao atualizar palavra.' });
+  }
+};*/
+
+const atualizarPalavra = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      texto,
+      nivel,
+      dica,
+      imagem,
+      silabas,
+      audio_silabas,
+      onomatopeias
+    } = req.body;
+
+    // validação básica: todos os campos obrigatórios
+    if (!texto || !nivel || !dica || !silabas) {
+      return res.status(400).json({
+        error: "Campos obrigatórios: texto, nivel, dica, silabas"
+      });
+    }
+
+    const dadosAtualizados = {
+      texto,
+      nivel,
+      dica,
+      imagem,
+      silabas,
+      audio_silabas,
+      onomatopeias
+    };
+
+    const resultado = await palavraDAO.atualizar(id, dadosAtualizados);
+
+    if (!resultado) {
+      return res.status(404).json({ error: "Palavra não encontrada" });
+    }
+
+    res.status(200).json({ message: "Palavra atualizada com sucesso!", palavra: resultado });
+  } catch (err) {
+    console.error("Erro ao atualizar palavra:", err);
+    res.status(400).json({ error: "Erro ao atualizar palavra." });
   }
 };
 

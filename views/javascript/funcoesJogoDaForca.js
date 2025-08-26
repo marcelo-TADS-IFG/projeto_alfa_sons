@@ -1,5 +1,4 @@
-// Funções do Jogo da Forca extraídas de exemplo-jogo-forca-api.html
-
+// Variáveis globais
 let palavras = [];
 let tentativasMax = 6;
 let palavra = "";
@@ -10,7 +9,7 @@ let tentativas = 0;
 let letrasErradas = [];
 let fimDeJogo = false;
 let palavraAtual = null; // Guarda o objeto completo da palavra sorteada
-let nivelAtual = 1;
+let nivelAtual = 5;
 let acertosNoNivel = 0;
 const NIVEL_MAXIMO = 5;
 let palavrasExibidas = []; // Armazena palavras já exibidas no nível atual
@@ -18,8 +17,6 @@ let pontosAluno = 0; // Pontos do aluno
 let estadoAnterior = [];
 let jogoFinalizado = false; // controla quando o aluno chegou no nível máximo
 const TEMPO_REVELACAO = 2500; // Tempo de espera entre cada revelação de letra (em ms)
-
-ServicoDeAudio.pronunciarPalavra(palavra); 
 
 async function fetchPalavras() {
     try {
@@ -122,6 +119,7 @@ function atualizarForca() {
     else img.src = `/imagemForca/forca-${tentativas}.svg`;
 }
 
+/*
 async function atualizarTela(letrasAntes = []) {
     const container = document.getElementById('wordDisplay');
     container.innerHTML = '';
@@ -172,9 +170,8 @@ async function atualizarTela(letrasAntes = []) {
     }
 
     document.getElementById('hint').textContent = `Dica: ${dica}`;
-}
+}*/
 
-/*
 async function atualizarTela(letrasAntes = []) {
     const container = document.getElementById('wordDisplay');
     container.innerHTML = '';
@@ -203,28 +200,24 @@ async function atualizarTela(letrasAntes = []) {
 
         // Vamos chamar pronunciarLetras e usar o callback para aplicar os efeitos visuais
         await ServicoDeAudio.pronunciarLetras(
-            novasLetras.map(n => n.letra).join(""), // passa apenas as letras novas
+            novasLetras.map(n => palavraAtual.onomatopeias[n.index]), // pega o token certo
             (i) => {
                 const { index } = novasLetras[i];
                 const span = document.getElementById(`letra-${index}`);
                 if (span) {
                     span.textContent = letrasDescobertas[index];
                     span.classList.add('zoom');
-
-                    // Remove o efeito depois do tempo de revelação
-                    setTimeout(() => {
-                        span.classList.remove('zoom');
-                    }, TEMPO_REVELACAO);
+                    setTimeout(() => span.classList.remove('zoom'), TEMPO_REVELACAO);
                 }
             },
-            TEMPO_REVELACAO // pausa entre cada letra
+            TEMPO_REVELACAO
         );
 
         liberarTeclado();
     }
 
     document.getElementById('hint').textContent = `Dica: ${dica}`;
-}*/
+}
 
 // Bloqueia o teclado sem mudar a cor
 function travarTeclado() {
@@ -247,8 +240,6 @@ function checarFimDeJogo() {
         mensagem.style.display = 'none';
         rewardImg.style.display = 'none';
 
-
-        // Espera 1 segundo antes de mostrar o popup
         setTimeout(() => {
             ServicoDeAudio.pronunciarPalavra(palavra); // fala imediatamente
 
@@ -262,7 +253,7 @@ function checarFimDeJogo() {
                 dado.style.animation = 'dado-spin 1s ease-in-out';
                 setTimeout(() => {
                     dado.style.animation = 'dado-bounce 2s ease-in-out infinite';
-                }, 1000);
+                }, 3000); // Espera 1 segundo antes de mostrar o popup
             }
 
             // Esconde o popup após 5s
@@ -279,24 +270,24 @@ function checarFimDeJogo() {
     } else if (tentativas >= tentativasMax) {
         mensagem.style.display = 'none';
         rewardImg.style.display = 'none';
-    
+
         document.getElementById('palavraCorreta').textContent = palavra;
         document.getElementById('modalFimDeJogo').style.display = 'flex';
         fimDeJogo = true;
-    
+
         // 🎵 Toca o som de fim de jogo
         const audioFim = document.getElementById('audioFimDeJogo');
         if (audioFim) {
             audioFim.currentTime = 0;
             audioFim.play().catch(err => console.warn("Erro ao tocar áudio de fim de jogo:", err));
         }
-    
+
         setTimeout(() => {
             document.getElementById('modalFimDeJogo').style.display = 'none';
             escolherPalavra();
         }, 5000);
     }
-    
+
 }
 
 async function destacarSilabas() {
@@ -369,7 +360,7 @@ function mostrarPopupFinal() {
     const popup = document.getElementById('popupFinal');
     popup.style.display = 'flex';
 
-    const audio = document.getElementById('audioFinal'); 
+    const audio = document.getElementById('audioFinal');
     if (audio) {
         audio.currentTime = 0;
         audio.play();

@@ -25,6 +25,7 @@ async function criar(palavra) {
   return { _id: result.insertedId, ...palavra };
 }
 
+
 async function atualizar(id, dados) {
   const db = await connect();
   await db.collection('palavras').updateOne(
@@ -33,6 +34,17 @@ async function atualizar(id, dados) {
   );
   return db.collection('palavras').findOne({ _id: new ObjectId(id) });
 }
+
+/*
+async function atualizar(id, dados) {
+  const db = await connect();
+  const result = await db.collection("palavras").findOneAndUpdate(
+    { _id: new ObjectId(id) },
+    { $set: dados },
+    { returnDocument: "after" }
+  );
+  return result.value; // retorna o objeto atualizado
+}*/
 
 async function deletar(id) {
   const db = await connect();

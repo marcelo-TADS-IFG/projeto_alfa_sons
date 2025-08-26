@@ -11,42 +11,46 @@ class ServicoDeAudio {
     ServicoDeAudio._tocarAudio(caminho);
   }
 
-  static async pronunciarSilabasSincronizado(nomesDosArquivos, callbackPorSilaba, pausa = 3000) {
+  static async pronunciarSilabasSincronizado(nomesDosArquivos, callbackPorSilaba, pausa = 200) {
     for (let i = 0; i < nomesDosArquivos.length; i++) {
       const nomeArquivo = nomesDosArquivos[i];
       const letraInicial = nomeArquivo.charAt(0).toLowerCase();
       const caminho = `../../audios/audioSilabas/${letraInicial}/${nomeArquivo}.mp3`;
 
-      // ⏱️ Mostra a sílaba no momento certo
+      // Mostra a sílaba no display
       if (callbackPorSilaba) {
         callbackPorSilaba(i);
       }
 
+      // Aguarda o áudio terminar
       await ServicoDeAudio._tocarAudioAsync(caminho);
 
-      // Pequena pausa entre as sílabas
-      await new Promise(resolve => setTimeout(resolve, pausa));
-    }
-  }
-
-   static async pronunciarLetras(palavra, callbackPorLetra, pausa = 1000) {
-    const palavraNormalizada = ServicoDeAudio._normalizar(palavra).toLowerCase();
-
-    for (let i = 0; i < palavraNormalizada.length; i++) {
-      const letra = palavraNormalizada.charAt(i);
-      const caminho = `../../audios/onomatopeias/${letra}.mp3`;
-
-      // ⏱️ callback da letra atual
-      if (callbackPorLetra) {
-        callbackPorLetra(i);
+      // Pausa mínima antes da próxima sílaba
+      if (pausa > 0) {
+        await new Promise(resolve => setTimeout(resolve, pausa));
       }
+    }
+  }
 
-      await ServicoDeAudio._tocarAudioAsync(caminho);
+  static async pronunciarLetras(onomatopeias, callbackPorLetra, pausa = 200) {
+  for (let i = 0; i < onomatopeias.length; i++) {
+    const token = onomatopeias[i];
+    const caminho = `../../audios/onomatopeias/${token}.mp3`;
 
-      // Pequena pausa entre os sons das letras
+    // Callback para destacar a letra atual na tela
+    if (callbackPorLetra) {
+      callbackPorLetra(i);
+    }
+
+    // Aguarda o áudio da letra/token terminar
+    await ServicoDeAudio._tocarAudioAsync(caminho);
+
+    // Pequena pausa entre os sons (opcional)
+    if (pausa > 0) {
       await new Promise(resolve => setTimeout(resolve, pausa));
     }
   }
+}
 
   static _tocarAudio(caminho) {
     if (ServicoDeAudio._audio) {
@@ -61,26 +65,31 @@ class ServicoDeAudio {
 
   static _tocarAudioAsync(caminho) {
     return new Promise((resolve) => {
-      if (ServicoDeAudio._audio) {
-        ServicoDeAudio._audio.pause();
-        ServicoDeAudio._audio.currentTime = 0;
-      }
-
       const audio = new Audio(caminho);
-      ServicoDeAudio._audio = audio;
+      audio.preload = "auto";
+
+      const playAudio = () => {
+        audio.play().catch(err => {
+          console.warn("Erro ao iniciar reprodução:", err);
+          resolve();
+        });
+      };
+
+      if (audio.readyState >= 4) {
+        // já carregado
+        playAudio();
+      } else {
+        audio.oncanplaythrough = playAudio;
+      }
 
       audio.onended = () => resolve();
       audio.onerror = () => {
         console.warn("Erro ao tocar áudio:", caminho);
-        resolve(); // Continua mesmo com erro
+        resolve(); // continua mesmo com erro
       };
-
-      audio.play().catch(err => {
-        console.warn("Erro ao iniciar reprodução:", err);
-        resolve();
-      });
     });
   }
+
 }
 
 export default ServicoDeAudio;

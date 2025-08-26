@@ -1,11 +1,12 @@
 class Palavra {
-  constructor({ texto, nivel, dica, silabas, audio_silabas, imagem }) {
+  constructor({ texto, nivel, dica, imagem, silabas, audio_silabas, onomatopeias}) {
     this.texto = texto;
     this.nivel = nivel;
     this.dica = dica;
-    this.silabas = silabas;
-    this.audio_silabas = audio_silabas; // novo campo
     this.imagem = imagem;
+    this.silabas = silabas;
+    this.audio_silabas = audio_silabas; 
+    this.onomatopeias = onomatopeias; // novo campo
   }
 
   getTexto() {
@@ -30,6 +31,10 @@ class Palavra {
 
   getAudioSilabas() {
     return this.audio_silabas;
+  }
+
+  getOnomatopeias() {
+    return this.onomatopeias;
   }
 }
 
