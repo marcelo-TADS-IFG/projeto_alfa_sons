@@ -19,7 +19,7 @@ app.use('/audios', express.static(path.join(__dirname, 'audios')));
 app.use(express.static('src'));
 app.use(express.static(path.join(__dirname, 'views')));
 
-// Rota para servir a tela de cadastro como página inicial
+// Rota para servir a página do EduForca como inicial
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'html', 'paginaEduForca.html'));
 });

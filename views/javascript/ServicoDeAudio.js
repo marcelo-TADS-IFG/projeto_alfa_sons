@@ -1,5 +1,6 @@
 class ServicoDeAudio {
   static _audio = null;
+  static _cacheOnomatopeias = {}; // cache de áudios pré-carregados
 
   static _normalizar(palavra) {
     return palavra.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -11,21 +12,39 @@ class ServicoDeAudio {
     ServicoDeAudio._tocarAudio(caminho);
   }
 
+  // 🔹 Pré-carregar os áudios de onomatopeias
+  static async preloadOnomatopeias(listaOnomatopeias) {
+
+    for (const token of listaOnomatopeias) {
+      const caminho = `../../audios/onomatopeias/${token}.mp3`;
+
+      if (!ServicoDeAudio._cacheOnomatopeias[token]) {
+        const audio = new Audio(caminho);
+        audio.preload = "auto";
+
+        // força carregamento
+        await new Promise(resolve => {
+          audio.oncanplaythrough = () => resolve();
+          audio.onerror = () => resolve(); // continua mesmo se falhar
+        });
+
+        ServicoDeAudio._cacheOnomatopeias[token] = audio;
+      }
+    }
+  }
+
   static async pronunciarSilabasSincronizado(nomesDosArquivos, callbackPorSilaba, pausa = 200) {
     for (let i = 0; i < nomesDosArquivos.length; i++) {
       const nomeArquivo = nomesDosArquivos[i];
       const letraInicial = nomeArquivo.charAt(0).toLowerCase();
       const caminho = `../../audios/audioSilabas/${letraInicial}/${nomeArquivo}.mp3`;
 
-      // Mostra a sílaba no display
       if (callbackPorSilaba) {
         callbackPorSilaba(i);
       }
 
-      // Aguarda o áudio terminar
       await ServicoDeAudio._tocarAudioAsync(caminho);
 
-      // Pausa mínima antes da próxima sílaba
       if (pausa > 0) {
         await new Promise(resolve => setTimeout(resolve, pausa));
       }
@@ -33,24 +52,29 @@ class ServicoDeAudio {
   }
 
   static async pronunciarLetras(onomatopeias, callbackPorLetra, pausa = 200) {
-  for (let i = 0; i < onomatopeias.length; i++) {
-    const token = onomatopeias[i];
-    const caminho = `../../audios/onomatopeias/${token}.mp3`;
+    for (let i = 0; i < onomatopeias.length; i++) {
+      const token = onomatopeias[i];
+      let audio = ServicoDeAudio._cacheOnomatopeias[token];
 
-    // Callback para destacar a letra atual na tela
-    if (callbackPorLetra) {
-      callbackPorLetra(i);
-    }
+      // se não estiver no cache, cria na hora
+      if (!audio) {
+        const caminho = `../../audios/onomatopeias/${token}.mp3`;
+        audio = new Audio(caminho);
+        audio.preload = "auto";
+        ServicoDeAudio._cacheOnomatopeias[token] = audio;
+      }
 
-    // Aguarda o áudio da letra/token terminar
-    await ServicoDeAudio._tocarAudioAsync(caminho);
+      if (callbackPorLetra) {
+        callbackPorLetra(i);
+      }
 
-    // Pequena pausa entre os sons (opcional)
-    if (pausa > 0) {
-      await new Promise(resolve => setTimeout(resolve, pausa));
+      await ServicoDeAudio._tocarAudioExistenteAsync(audio);
+
+      if (pausa > 0) {
+        await new Promise(resolve => setTimeout(resolve, pausa));
+      }
     }
   }
-}
 
   static _tocarAudio(caminho) {
     if (ServicoDeAudio._audio) {
@@ -76,20 +100,27 @@ class ServicoDeAudio {
       };
 
       if (audio.readyState >= 4) {
-        // já carregado
         playAudio();
       } else {
         audio.oncanplaythrough = playAudio;
       }
 
       audio.onended = () => resolve();
-      audio.onerror = () => {
-        console.warn("Erro ao tocar áudio:", caminho);
-        resolve(); // continua mesmo com erro
-      };
+      audio.onerror = () => resolve();
     });
   }
 
+  // 🔹 Versão para tocar áudio já carregado do cache
+  static _tocarAudioExistenteAsync(audio) {
+    return new Promise(resolve => {
+      audio.currentTime = 0;
+      audio.play().catch(err => {
+        console.warn("Erro ao tocar áudio do cache:", err);
+        resolve();
+      });
+      audio.onended = () => resolve();
+    });
+  }
 }
 
 export default ServicoDeAudio;

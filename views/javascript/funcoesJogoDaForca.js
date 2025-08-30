@@ -16,21 +16,8 @@ let palavrasExibidas = []; // Armazena palavras já exibidas no nível atual
 let pontosAluno = 0; // Pontos do aluno
 let estadoAnterior = [];
 let jogoFinalizado = false; // controla quando o aluno chegou no nível máximo
+let fogosInterval;
 const TEMPO_REVELACAO = 2500; // Tempo de espera entre cada revelação de letra (em ms)
-
-async function fetchPalavras() {
-    try {
-        const response = await fetch('http://localhost:3000/palavras');
-        const data = await response.json();
-        palavras = data.map(palavra => ({
-            ...palavra,
-            imagem: palavra.imagem.startsWith('http') ? palavra.imagem : `http://localhost:3000${palavra.imagem}`
-        }));
-        escolherPalavra();
-    } catch (error) {
-        alert('Erro ao buscar palavras da API');
-    }
-}
 
 async function buscarPalavraAleatoriaDoNivel() {
     try {
@@ -119,15 +106,12 @@ function atualizarForca() {
     else img.src = `/imagemForca/forca-${tentativas}.svg`;
 }
 
-/*
 async function atualizarTela(letrasAntes = []) {
     const container = document.getElementById('wordDisplay');
     container.innerHTML = '';
 
-    // Sempre renderiza o teclado
     renderTeclado();
 
-    // Renderiza a palavra com "_" ou letras já conhecidas
     palavra.split("").forEach((_, index) => {
         const span = document.createElement('span');
         span.id = `letra-${index}`;
@@ -137,7 +121,6 @@ async function atualizarTela(letrasAntes = []) {
         container.append(' ');
     });
 
-    // Descobre quais letras foram reveladas nessa jogada
     const novasLetras = palavra
         .split("")
         .map((letra, index) => ({ letra, index }))
@@ -146,61 +129,9 @@ async function atualizarTela(letrasAntes = []) {
     if (novasLetras.length > 0) {
         travarTeclado();
 
-        for (let i = 0; i < novasLetras.length; i++) {
-            const { letra, index } = novasLetras[i];
-            const span = document.getElementById(`letra-${index}`);
-
-            // Revela a letra na tela
-            span.textContent = letrasDescobertas[index];
-            span.classList.add('zoom');
-
-            // 🎵 toca a onomatopeia específica dessa posição
-            if (palavraAtual.onomatopeias && palavraAtual.onomatopeias[index]) {
-                const onomatopeia = palavraAtual.onomatopeias[index];
-                const caminho = `../../audios/onomatopeias/${onomatopeia}.mp3`;
-                await ServicoDeAudio._tocarAudioAsync(caminho);
-            }
-
-            // Mantém efeito antes de ir para próxima
-            await new Promise(resolve => setTimeout(resolve, TEMPO_REVELACAO));
-            span.classList.remove('zoom');
-        }
-
-        liberarTeclado();
-    }
-
-    document.getElementById('hint').textContent = `Dica: ${dica}`;
-}*/
-
-async function atualizarTela(letrasAntes = []) {
-    const container = document.getElementById('wordDisplay');
-    container.innerHTML = '';
-
-    // Sempre renderiza o teclado
-    renderTeclado();
-
-    // Renderiza a palavra com "_" ou letras já conhecidas
-    palavra.split("").forEach((_, index) => {
-        const span = document.createElement('span');
-        span.id = `letra-${index}`;
-        span.className = 'letra-jogo';
-        span.textContent = letrasAntes[index] !== "_" ? letrasDescobertas[index] : "_";
-        container.appendChild(span);
-        container.append(' ');
-    });
-
-    // Descobre quais letras foram reveladas nessa jogada
-    const novasLetras = palavra
-        .split("")
-        .map((letra, index) => ({ letra, index }))
-        .filter(({ index }) => letrasDescobertas[index] !== "_" && letrasAntes[index] === "_");
-
-    if (novasLetras.length > 0) {
-        travarTeclado();
-
-        // Vamos chamar pronunciarLetras e usar o callback para aplicar os efeitos visuais
+        // Espera todas as letras serem faladas e exibidas
         await ServicoDeAudio.pronunciarLetras(
-            novasLetras.map(n => palavraAtual.onomatopeias[n.index]), // pega o token certo
+            novasLetras.map(n => palavraAtual.onomatopeias[n.index]),
             (i) => {
                 const { index } = novasLetras[i];
                 const span = document.getElementById(`letra-${index}`);
@@ -215,6 +146,9 @@ async function atualizarTela(letrasAntes = []) {
 
         liberarTeclado();
     }
+
+    // ✅ Só checa fim depois de tudo estar pronto
+    checarFimDeJogo();
 
     document.getElementById('hint').textContent = `Dica: ${dica}`;
 }
@@ -236,46 +170,56 @@ function checarFimDeJogo() {
     const mensagem = document.getElementById('mensagem');
     const rewardImg = document.getElementById('rewardImage');
 
-    if (!letrasDescobertas.includes("_")) {
+    // ✅ Garante que o popup só aparece uma vez
+    if (fimDeJogo) return;
+
+    // Verifica se na tela ainda existe "_"
+    const container = document.getElementById('wordDisplay');
+    const incompletas = [...container.querySelectorAll('span')]
+        .some(span => span.textContent === "_");
+
+    if (!incompletas) {
+        fimDeJogo = true;
+
         mensagem.style.display = 'none';
         rewardImg.style.display = 'none';
 
+        // espera 1s após completar a palavra
         setTimeout(() => {
-            ServicoDeAudio.pronunciarPalavra(palavra); // fala imediatamente
+            ServicoDeAudio.pronunciarPalavra(palavra);
 
             document.getElementById('popupImagem').src = imagem;
             document.getElementById('popupPalavra').textContent = palavra;
             document.getElementById('popupParabens').style.display = 'flex';
 
-            // Animação especial do dado
             const dado = document.querySelector('.icon');
             if (dado) {
                 dado.style.animation = 'dado-spin 1s ease-in-out';
                 setTimeout(() => {
                     dado.style.animation = 'dado-bounce 2s ease-in-out infinite';
-                }, 3000); // Espera 1 segundo antes de mostrar o popup
+                }, 3000);
             }
 
-            // Esconde o popup após 5s
+            // esconde popup após 5s
             setTimeout(() => {
                 document.getElementById('popupParabens').style.display = 'none';
                 destacarSilabas();
             }, 5000);
-        }, 5000); // espera 5 segundo antes de mostrar o popup
+        }, 7000); // exibe o popup 7s após completar a palavra
 
-        fimDeJogo = true;
         acertosNoNivel++;
         pontosAluno += 10;
         atualizarHeaderAluno();
+
     } else if (tentativas >= tentativasMax) {
+        fimDeJogo = true;
+
         mensagem.style.display = 'none';
         rewardImg.style.display = 'none';
 
         document.getElementById('palavraCorreta').textContent = palavra;
         document.getElementById('modalFimDeJogo').style.display = 'flex';
-        fimDeJogo = true;
 
-        // 🎵 Toca o som de fim de jogo
         const audioFim = document.getElementById('audioFimDeJogo');
         if (audioFim) {
             audioFim.currentTime = 0;
@@ -287,7 +231,6 @@ function checarFimDeJogo() {
             escolherPalavra();
         }, 5000);
     }
-
 }
 
 async function destacarSilabas() {
@@ -355,10 +298,52 @@ function atualizarHeaderAluno() {
     if (headerPontos) headerPontos.textContent = pontosAluno;
 }
 
+function criarFogo() {
+    const numParticulas = 25;
+    const cores = ['#ff0','#f0f','#0ff','#f00','#0f0','#00f','#ffa500'];
+
+    // Posição aleatória da explosão
+    const centroX = Math.random() * window.innerWidth;
+    const centroY = Math.random() * window.innerHeight;
+
+    for (let i = 0; i < numParticulas; i++) {
+        const fogo = document.createElement('div');
+        fogo.classList.add('fogo');
+        fogo.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+
+        // Cada partícula explode em direção aleatória
+        const angulo = Math.random() * 2 * Math.PI;
+        const distancia = 50 + Math.random() * 100;
+
+        const x = Math.cos(angulo) * distancia + 'px';
+        const y = Math.sin(angulo) * distancia + 'px';
+        fogo.style.setProperty('--x', x);
+        fogo.style.setProperty('--y', y);
+
+        fogo.style.left = centroX + 'px';
+        fogo.style.top = centroY + 'px';
+
+        document.body.appendChild(fogo);
+        setTimeout(() => fogo.remove(), 1000);
+    }
+}
+
+function iniciarFogos() {
+    fogosInterval = setInterval(criarFogo, 500); // dispara a cada 0.5s
+}
+
+function pararFogos() {
+    clearInterval(fogosInterval);
+    document.querySelectorAll('.fogo').forEach(f => f.remove());
+}
+
+// Atualizando suas funções
 function mostrarPopupFinal() {
     jogoFinalizado = true;
     const popup = document.getElementById('popupFinal');
     popup.style.display = 'flex';
+
+    iniciarFogos();
 
     const audio = document.getElementById('audioFinal');
     if (audio) {
@@ -369,6 +354,7 @@ function mostrarPopupFinal() {
 
 function reiniciarJogo() {
     document.getElementById('popupFinal').style.display = 'none';
+    pararFogos();
     nivelAtual = 1;
     acertosNoNivel = 0;
     pontosAluno = 0;
@@ -379,6 +365,7 @@ function reiniciarJogo() {
 
 function sairJogo() {
     document.getElementById('popupSair').style.display = 'flex';
+    pararFogos();
 }
 
 function confirmarSair() {
@@ -386,7 +373,7 @@ function confirmarSair() {
 }
 
 function proximaPalavraOuNivel() {
-    if (acertosNoNivel >= 16 && nivelAtual < NIVEL_MAXIMO) {
+    if (acertosNoNivel >= 3 && nivelAtual < NIVEL_MAXIMO) {
         nivelAtual++;
         acertosNoNivel = 0;
         atualizarHeaderAluno();
