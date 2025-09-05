@@ -133,11 +133,9 @@
  *       404:
  *         description: Aluno não encontrado
  */
-const express = require('express');
-const router = express.Router();
-const alunoController = require('../controllers/alunoController');
 
 // Listar todos os alunos
+/*
 router.get('/', async (req, res) => {
     const alunos = await alunoController.listarAlunos();
     res.json(alunos);
@@ -183,6 +181,25 @@ router.patch('/:id', async (req, res) => {
     } else {
         res.status(404).send('Aluno não encontrado ou dados iguais');
     }
-});
+});*/
+
+const express = require('express');
+const router = express.Router();
+const alunoController = require('../controllers/alunoController');
+
+// Buscar alunos pelo termo
+router.get('/buscar/:nome', alunoController.buscarAlunosPorNome);
+
+// Listar todos os alunos
+router.get('/', alunoController.listarAlunos);
+
+// Adicionar novo aluno
+router.post('/', alunoController.adicionarAluno);
+
+// Deletar aluno
+router.delete('/:id', alunoController.deletarAlunoPorId);
+
+// Atualizar progresso
+router.patch('/:id', alunoController.atualizarProgressoAluno);
 
 module.exports = router; 

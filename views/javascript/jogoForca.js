@@ -2,10 +2,12 @@
 import ServicoDeAudio from '../../javascript/ServicoDeAudio.js';
 window.ServicoDeAudio = ServicoDeAudio; // Disponibiliza globalmente
 
-// -------------------- Variáveis globais do jogo --------------------
-window.nivelAtual = 1;
-window.acertosNoNivel = 0;
-window.pontosAluno = window.pontosAluno ?? 0;
+// -------------------- Inicialização do jogo --------------------
+window.onload = () => {
+    nivelAtual = 1;
+    acertosNoNivel = 0;
+    escolherPalavra();
+};
 
 const botoes = document.querySelectorAll('.teclado button');
 
@@ -15,13 +17,24 @@ function removerAcentos(str) {
 }
 
 // -------------------- Inicialização do jogo --------------------
+/*
 window.onload = () => {
     if (typeof escolherPalavra === 'function') {
         escolherPalavra(); // Função do funcoesJogoDaForca.js
     } else {
         console.error('Função escolherPalavra() não encontrada!');
     }
-};
+};*/
+
+const aluno = getAlunoFromQuery();
+        if (aluno) {
+            // Exibe o header do aluno
+            document.getElementById('headerAluno').style.display = 'block';
+            document.getElementById('alunoNome').textContent = `${aluno.nome} ${aluno.sobrenome}`;
+            document.getElementById('alunoTurma').textContent = aluno.turma;
+            document.getElementById('alunoNivel').textContent = nivelAtual;
+            document.getElementById('alunoPontos').textContent = pontosAluno;
+        }
 
 // -------------------- Recupera aluno da query string --------------------
 function getAlunoFromQuery() {
@@ -37,6 +50,7 @@ function getAlunoFromQuery() {
     return null;
 }
 
+/*
 const aluno = getAlunoFromQuery();
 if (aluno) {
     document.getElementById('headerAluno').style.display = 'block';
@@ -44,7 +58,7 @@ if (aluno) {
     document.getElementById('alunoTurma').textContent = aluno.turma;
     document.getElementById('alunoNivel').textContent = window.nivelAtual;
     document.getElementById('alunoPontos').textContent = window.pontosAluno;
-}
+}*/
 
 // -------------------- Botão Sair --------------------
 const btnSair = document.getElementById('btnSair');
@@ -55,21 +69,22 @@ const modalSairPontos = document.getElementById('modalSairPontos');
 const modalSairNivel = document.getElementById('modalSairNivel');
 
 if (btnSair) {
-    btnSair.addEventListener('click', () => {
-        modalSairPontos.textContent = window.pontosAluno;
-        modalSairNivel.textContent = window.nivelAtual;
+    btnSair.onclick = () => {
+        // Atualiza pontos e nível no modal
+        modalSairPontos.textContent = window.pontosAluno !== undefined ? window.pontosAluno : document.getElementById('alunoPontos').textContent;
+        modalSairNivel.textContent = window.nivelAtual !== undefined ? window.nivelAtual : document.getElementById('alunoNivel').textContent;
         modalSair.style.display = 'flex';
-    });
+    };
 }
-
 if (btnCancelarSair) {
-    btnCancelarSair.addEventListener('click', () => modalSair.style.display = 'none');
+    btnCancelarSair.onclick = () => {
+        modalSair.style.display = 'none';
+    };
 }
-
 if (btnConfirmarSair) {
-    btnConfirmarSair.addEventListener('click', () => {
+    btnConfirmarSair.onclick = () => {
         window.location.href = '/html/cadastroAlunos.html';
-    });
+    };
 }
 
 // -------------------- Teclado interativo (desktop + touchscreen) --------------------
@@ -86,7 +101,7 @@ botoes.forEach(botao => {
                 botao.classList.add('wrong'); // feedback visual
             }
 
-            verificarLetra(letraEscolhida); 
+            verificarLetra(letraEscolhida);
         }
 
         botao.disabled = true; // desabilita após o uso

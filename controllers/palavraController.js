@@ -1,6 +1,6 @@
 const Palavra = require('../models/Palavra');
 const palavraDAO = require('../dao/palavraDAO');
-// Removi a importação de isValidImageBase64 pois não é mais necessária
+//a importação de isValidImageBase64 não é mais necessária
 
 const listarPalavras = async (req, res) => {
   try {

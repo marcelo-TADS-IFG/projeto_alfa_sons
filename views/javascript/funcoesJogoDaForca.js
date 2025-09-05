@@ -9,7 +9,7 @@ let tentativas = 0;
 let letrasErradas = [];
 let fimDeJogo = false;
 let palavraAtual = null; // Guarda o objeto completo da palavra sorteada
-let nivelAtual = 5;
+let nivelAtual = 1;
 let acertosNoNivel = 0;
 const NIVEL_MAXIMO = 5;
 let palavrasExibidas = []; // Armazena palavras já exibidas no nível atual
@@ -209,6 +209,7 @@ function checarFimDeJogo() {
 
         acertosNoNivel++;
         pontosAluno += 10;
+        localStorage.setItem('pontosAluno', window.pontosAluno);
         atualizarHeaderAluno();
 
     } else if (tentativas >= tentativasMax) {
@@ -376,6 +377,9 @@ function proximaPalavraOuNivel() {
     if (acertosNoNivel >= 3 && nivelAtual < NIVEL_MAXIMO) {
         nivelAtual++;
         acertosNoNivel = 0;
+        // Salva o nível no localStorage para persistência
+        localStorage.setItem('nivelAtual', window.nivelAtual);
+        
         atualizarHeaderAluno();
         mostrarPopupNivel(nivelAtual);
     } else if (acertosNoNivel >= 3 && nivelAtual === NIVEL_MAXIMO) {

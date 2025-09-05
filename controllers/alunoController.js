@@ -1,4 +1,4 @@
-const { connect } = require('../dao/mongoConnection.js');
+/*const { connect } = require('../dao/mongoConnection.js');
 const { ObjectId } = require('mongodb');
 const Aluno = require('../models/Aluno.js');
 
@@ -74,4 +74,101 @@ module.exports = {
     buscarAlunosPorNome,
     deletarAlunoPorId,
     atualizarProgressoAluno
-}; 
+}; */
+
+// controllers/alunoController.js
+const Aluno = require('../models/Aluno');
+const alunoDAO = require('../dao/alunoDAO'); // caso tenha métodos separados de DAO
+
+// Listar todos os alunos
+const listarAlunos = async (req, res) => {
+    try {
+        const alunos = await alunoDAO.listarAlunos();
+        res.json(alunos);
+    } catch (err) {
+        console.error('Erro ao listar alunos:', err);
+        res.status(500).json({ error: 'Erro ao listar alunos.' });
+    }
+};
+
+// Adicionar novo aluno
+const adicionarAluno = async (req, res) => {
+    try {
+        const { nome, sobrenome, turma } = req.body;
+
+        if (!nome || !sobrenome || !turma) {
+            return res.status(400).json({ error: 'Campos obrigatórios: nome, sobrenome e turma' });
+        }
+
+        const novoAluno = new Aluno(nome, sobrenome, turma);
+        const alunoCriado = await alunoDAO.adicionarAluno(novoAluno);
+
+        res.status(201).json(alunoCriado);
+    } catch (err) {
+        console.error('Erro ao adicionar aluno:', err);
+        res.status(400).json({ error: 'Erro ao adicionar aluno.' });
+    }
+};
+
+const buscarAlunosPorNome = async (req, res) => {
+    try {
+        const termo = req.params.nome; // 👈 agora usa o mesmo nome da rota
+        if (!termo || termo.trim() === '') {
+            return res.status(400).json({ error: 'Termo de busca inválido.' });
+        }
+
+        const alunos = await alunoDAO.buscarAlunosPorNome(termo);
+        res.json(alunos);
+    } catch (err) {
+        console.error('Erro ao buscar alunos:', err);
+        res.status(500).json({ error: 'Erro ao buscar alunos.' });
+    }
+};
+
+// Deletar aluno por ID
+const deletarAlunoPorId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const resultado = await alunoDAO.deletarAlunoPorId(id);
+
+        if (resultado?.deletedCount === 0) {
+            return res.status(404).json({ error: 'Aluno não encontrado.' });
+        }
+
+        res.json({ message: 'Aluno deletado com sucesso.' });
+    } catch (err) {
+        console.error('Erro ao deletar aluno:', err);
+        res.status(500).json({ error: 'Erro ao deletar aluno.' });
+    }
+};
+
+// Atualizar pontos e nível (opcional)
+const atualizarProgressoAluno = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const dados = req.body;
+
+        const resultado = await alunoDAO.atualizarProgressoAluno(id, dados);
+
+        if (resultado?.noUpdate) {
+            return res.status(400).json({ error: 'Nenhum dado válido para atualizar.' });
+        }
+
+        if (resultado?.invalidId) {
+            return res.status(400).json({ error: 'ID inválido.' });
+        }
+
+        res.json({ message: 'Progresso do aluno atualizado com sucesso.' });
+    } catch (err) {
+        console.error('Erro ao atualizar progresso do aluno:', err);
+        res.status(500).json({ error: 'Erro ao atualizar progresso do aluno.' });
+    }
+};
+
+module.exports = {
+    listarAlunos,
+    adicionarAluno,
+    buscarAlunosPorNome,
+    deletarAlunoPorId,
+    atualizarProgressoAluno
+};

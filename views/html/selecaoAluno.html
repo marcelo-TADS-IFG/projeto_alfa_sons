@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alfa Sons - Seleção de Aluno</title>
     <link rel="stylesheet" href="../css/selecaoAluno.css">
 </head>
+
 <body>
     <div class="header">
         <div class="logo">🎮 EduForca</div>
@@ -20,13 +22,10 @@
 
         <div class="search-section">
             <h2 class="search-title">🔍 Buscar Aluno</h2>
-            
+
             <div class="search-container">
-                <input type="text" 
-                       id="searchAluno" 
-                       class="search-input" 
-                       placeholder="Digite o nome, sobrenome ou turma do aluno..." 
-                       autocomplete="off">
+                <input type="text" id="searchAluno" class="search-input"
+                    placeholder="Digite o nome, sobrenome ou turma do aluno..." autocomplete="off">
                 <div class="search-suggestions" id="searchSuggestions"></div>
             </div>
 
@@ -39,14 +38,70 @@
         <div class="selected-aluno-section" id="selectedAlunoSection">
             <h3 class="selected-aluno-title">✅ Aluno Selecionado</h3>
             <div class="aluno-info" id="alunoInfo"></div>
-            
+
             <button class="btn" id="btnIniciarJogo">🎯 Iniciar Jogo da Forca</button>
             <button class="btn btn-voltar" id="btnVoltar">⬅️ Voltar</button>
-            <button class="btn" id="btnExcluirAluno" 
-                    style="background: linear-gradient(45deg, #dc3545, #e74c3c); margin-left: 10px;">
+            <button class="btn" id="btnExcluirAluno"
+                style="background: linear-gradient(45deg, #dc3545, #e74c3c); margin-left: 10px;">
                 🗑️ Excluir Aluno
             </button>
+            <button class="btn btn-atualizar" id="btnAtualizarAluno" style="margin-left: 10px;">
+                🔄 Atualizar Aluno
+            </button>
         </div>
+
+        <!-- Modal Atualizar Aluno -->
+        <div id="modalUpdate" class="modal-update-bg" style="display:none;">
+            <div class="modal-update-box">
+                <div class="modal-update-title">✏️ Atualizar Aluno</div>
+
+                <form class="modal-update-form">
+                    <div class="form-group">
+                        <label for="updateNome">Nome do Aluno:</label>
+                        <input type="text" id="updateNome" name="updateNome" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="updateSobrenome">Sobrenome:</label>
+                        <input type="text" id="updateSobrenome" name="updateSobrenome" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="updateTurma">Turma:</label>
+                        <select id="updateTurma" name="updateTurma" required>
+                            <option value="">Selecione a turma</option>
+                            <option value="1° - A">1° - A</option>
+                            <option value="1° - B">1° - B</option>
+                            <option value="2° - A">2° - A</option>
+                            <option value="2° - B">2° - B</option>
+                            <option value="3° - A">3° - A</option>
+                            <option value="3° - B">3° - B</option>
+                            <option value="4° - A">4° - A</option>
+                            <option value="4° - B">4° - B</option>
+                            <option value="5° - A">5° - A</option>
+                            <option value="5° - B">5° - B</option>
+                            <option value="JARDIM - 1 A">JARDIM - 1A</option>
+                            <option value="JARDIM - 1 B">JARDIM - 1B</option>
+                            <option value="JARDIM - 2 A">JARDIM - 2A</option>
+                            <option value="JARDIM - 2 B">JARDIM - 2B</option>
+                        </select>
+                    </div>
+                </form>
+
+                <div class="modal-update-actions">
+                    <button class="btn btn-save" id="btnSaveUpdate">💾 Salvar</button>
+                    <button class="btn btn-voltar" id="btnCancelUpdate">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Efeito visual Let's Play -->
+        <div id="letsPlayEffect" class="lets-play-effect" style="display:none;">
+            <div class="circle-loader"></div>
+            <div class="lets-play-text">Let's Play!</div>
+        </div>
+
 
         <!-- Feedback visual de exclusão -->
         <div id="feedbackExclusao" class="feedback-exclusao" style="display:none;">
@@ -71,4 +126,5 @@
     <!-- Importa o JavaScript externo -->
     <script src="/javascript/selecaoAluno.js"></script>
 </body>
+
 </html>
