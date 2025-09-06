@@ -1,4 +1,5 @@
 /**
+/**
  * @swagger
  * /alunos:
  *   get:
@@ -93,6 +94,8 @@
  * /alunos/{id}:
  *   patch:
  *     summary: Atualiza pontos e nível do aluno
+ *     tags:
+ *       - Alunos
  *     parameters:
  *       - in: path
  *         name: id
@@ -119,8 +122,43 @@
  *         description: ID inválido ou nenhum campo para atualizar
  *       404:
  *         description: Aluno não encontrado ou dados iguais
+ *   put:
+ *     summary: Atualiza os dados básicos do aluno (nome, sobrenome e turma)
+ *     tags:
+ *       - Alunos
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *                 example: Maria
+ *               sobrenome:
+ *                 type: string
+ *                 example: Oliveira
+ *               turma:
+ *                 type: string
+ *                 example: 6B
+ *     responses:
+ *       200:
+ *         description: Dados do aluno atualizados com sucesso!
+ *       400:
+ *         description: ID inválido ou nenhum campo para atualizar
+ *       404:
+ *         description: Aluno não encontrado ou dados iguais
  *   delete:
  *     summary: Excluir um aluno pelo ID
+ *     tags:
+ *       - Alunos
  *     parameters:
  *       - in: path
  *         name: id
@@ -201,5 +239,8 @@ router.delete('/:id', alunoController.deletarAlunoPorId);
 
 // Atualizar progresso
 router.patch('/:id', alunoController.atualizarProgressoAluno);
+
+// Atualizar dados básicos do aluno
+router.put('/:id', alunoController.atualizarAluno);
 
 module.exports = router; 

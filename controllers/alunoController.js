@@ -165,10 +165,36 @@ const atualizarProgressoAluno = async (req, res) => {
     }
 };
 
+// Atualizar dados básicos do aluno (nome, sobrenome e turma)
+const atualizarAluno = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { nome, sobrenome, turma } = req.body;
+
+        const resultado = await alunoDAO.atualizarAluno(id, { nome, sobrenome, turma });
+
+        if (resultado.invalidId) {
+            return res.status(400).json({ error: 'ID inválido.' });
+        }
+        if (resultado.noUpdate) {
+            return res.status(400).json({ error: 'Nenhum campo válido para atualizar.' });
+        }
+        if (resultado.modifiedCount === 0) {
+            return res.status(404).json({ error: 'Aluno não encontrado ou dados iguais.' });
+        }
+
+        res.json({ message: 'Aluno atualizado com sucesso!' });
+    } catch (err) {
+        console.error('Erro ao atualizar aluno:', err);
+        res.status(500).json({ error: 'Erro ao atualizar aluno.' });
+    }
+};
+
 module.exports = {
     listarAlunos,
     adicionarAluno,
     buscarAlunosPorNome,
     deletarAlunoPorId,
-    atualizarProgressoAluno
+    atualizarProgressoAluno,
+    atualizarAluno   // novo método
 };

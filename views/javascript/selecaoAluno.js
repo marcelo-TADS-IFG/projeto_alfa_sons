@@ -223,7 +223,7 @@ document.getElementById('searchAluno').addEventListener('input', function (e) {
     searchTimeout = setTimeout(async () => {
         try {
             const response = await fetch(`http://localhost:3000/alunos/buscar/${encodeURIComponent(searchTerm)}`);
-            
+
             if (!response.ok) {
                 throw new Error(`Erro HTTP: ${response.status}`);
             }
@@ -334,8 +334,16 @@ document.getElementById('btnSaveUpdate').addEventListener('click', async functio
 
                 document.getElementById('modalUpdate').style.display = 'none';
 
-                alert('Aluno atualizado com sucesso!');
-            } else {
+                // Mostra mensagem personalizada
+                const feedback = document.getElementById('feedbackUpdate');
+                feedback.style.display = 'block';
+
+                // Esconde após 2.5s
+                setTimeout(() => {
+                    feedback.style.display = 'none';
+                }, 2500);
+            }
+            else {
                 alert('Erro ao atualizar aluno.');
             }
         } catch (error) {

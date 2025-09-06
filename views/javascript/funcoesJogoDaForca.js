@@ -170,7 +170,7 @@ function checarFimDeJogo() {
     const mensagem = document.getElementById('mensagem');
     const rewardImg = document.getElementById('rewardImage');
 
-    // ✅ Garante que o popup só aparece uma vez
+    //Garante que o popup só aparece uma vez
     if (fimDeJogo) return;
 
     // Verifica se na tela ainda existe "_"
@@ -205,7 +205,7 @@ function checarFimDeJogo() {
                 document.getElementById('popupParabens').style.display = 'none';
                 destacarSilabas();
             }, 5000);
-        }, 7000); // exibe o popup 7s após completar a palavra
+        }, 5000); // exibe o popup 5s após completar a palavra
 
         acertosNoNivel++;
         pontosAluno += 10;
@@ -272,7 +272,7 @@ async function destacarSilabas() {
 
     setTimeout(() => {
         if (!jogoFinalizado) proximaPalavraOuNivel();
-    }, 3000);
+    }, 5000);
 }
 
 function mostrarPopupNivel(nivel) {
@@ -374,7 +374,7 @@ function confirmarSair() {
 }
 
 function proximaPalavraOuNivel() {
-    if (acertosNoNivel >= 3 && nivelAtual < NIVEL_MAXIMO) {
+    if (acertosNoNivel >= 1 && nivelAtual < NIVEL_MAXIMO) {
         nivelAtual++;
         acertosNoNivel = 0;
         // Salva o nível no localStorage para persistência

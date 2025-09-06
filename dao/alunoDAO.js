@@ -78,10 +78,39 @@ async function atualizarProgressoAluno(id, dados) {
     return result;
 }
 
+// Atualizar dados básicos do aluno (nome, sobrenome e turma)
+async function atualizarAluno(id, dados) {
+    const db = await connect();
+    if (!ObjectId.isValid(id)) {
+        return { invalidId: true };
+    }
+
+    const update = {};
+    if (typeof dados.nome === 'string' && dados.nome.trim() !== '') {
+        update.nome = dados.nome.trim();
+    }
+    if (typeof dados.sobrenome === 'string' && dados.sobrenome.trim() !== '') {
+        update.sobrenome = dados.sobrenome.trim();
+    }
+    if (typeof dados.turma === 'string' && dados.turma.trim() !== '') {
+        update.turma = dados.turma.trim();
+    }
+
+    if (Object.keys(update).length === 0) return { noUpdate: true };
+
+    const result = await db.collection('alunos').updateOne(
+        { _id: new ObjectId(id) },
+        { $set: update }
+    );
+
+    return result;
+}
+
 module.exports = {
     listarAlunos,
     adicionarAluno,
     buscarAlunosPorNome,
     deletarAlunoPorId,
-    atualizarProgressoAluno
+    atualizarProgressoAluno,
+    atualizarAluno   // novo método
 };
