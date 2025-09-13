@@ -374,7 +374,7 @@ function confirmarSair() {
 }
 
 function proximaPalavraOuNivel() {
-    if (acertosNoNivel >= 1 && nivelAtual < NIVEL_MAXIMO) {
+    if (acertosNoNivel >= 3 && nivelAtual < NIVEL_MAXIMO) {
         nivelAtual++;
         acertosNoNivel = 0;
         // Salva o nível no localStorage para persistência
