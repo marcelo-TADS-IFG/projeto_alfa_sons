@@ -1,7 +1,7 @@
 body {
     font-family: 'Comic Sans MS', cursive, sans-serif;
     /* Substituindo o gradiente pela imagem */
-    background-image: url('../images/arvore.jpg');
+    background-image: url('../images/cerejeira.png');
     background-size: cover; /* Faz a imagem preencher toda a tela */
     background-position: center; /* Centraliza a imagem */
     background-repeat: no-repeat; /* Evita que a imagem se repita */

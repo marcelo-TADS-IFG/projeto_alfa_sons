@@ -23,7 +23,7 @@ async function buscarPalavraAleatoriaDoNivel() {
     try {
         let tentativasSorteio = 0;
         let sorteada;
-        const maxTentativas = 15; // Evita loop infinito
+        const maxTentativas = 16; // Evita loop infinito
 
         do {
             const response = await fetch(`http://localhost:3000/palavras/aleatoria/${nivelAtual}`);
@@ -76,7 +76,7 @@ function renderTeclado() {
 function removerAcentos(letra) {
     return letra.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
-
+/*
 function tentarLetra(letra) {
     if (fimDeJogo) return;
     let acertou = false;
@@ -94,6 +94,38 @@ function tentarLetra(letra) {
         tentativas++;
         letrasErradas.push(letra);
         atualizarForca();
+    }
+
+    atualizarTela(letrasAntes);
+    checarFimDeJogo();
+}*/
+
+function tentarLetra(letra) {
+    if (fimDeJogo) return;
+    let acertou = false;
+
+    const letrasAntes = [...letrasDescobertas];
+
+    palavra.split("").forEach((l, i) => {
+        if (removerAcentos(l.toUpperCase()) === letra.toUpperCase()) {
+            letrasDescobertas[i] = l; // mantém a versão original (com acento)
+            acertou = true;
+        }
+    });
+
+    // 🔹 Aqui normalizamos sempre a letra escolhida
+    const letraNormalizada = removerAcentos(letra.toUpperCase());
+
+    if (!acertou) {
+        tentativas++;
+        // guarda a versão normalizada para que o botão sem acento seja bloqueado
+        letrasErradas.push(letraNormalizada);
+        atualizarForca();
+    } else {
+        // mesmo quando acerta, também precisa guardar para bloquear o botão
+        if (!letrasErradas.includes(letraNormalizada)) {
+            letrasErradas.push(letraNormalizada);
+        }
     }
 
     atualizarTela(letrasAntes);
@@ -126,7 +158,7 @@ async function atualizarTela(letrasAntes = []) {
         .map((letra, index) => ({ letra, index }))
         .filter(({ index }) => letrasDescobertas[index] !== "_" && letrasAntes[index] === "_");
 
-    if (novasLetras.length > 0) {
+    /*if (novasLetras.length > 0) {
         travarTeclado();
 
         // Espera todas as letras serem faladas e exibidas
@@ -140,6 +172,29 @@ async function atualizarTela(letrasAntes = []) {
                     span.classList.add('zoom');
                     setTimeout(() => span.classList.remove('zoom'), TEMPO_REVELACAO);
                 }
+            },
+            TEMPO_REVELACAO
+        );
+
+        liberarTeclado();
+    }*/
+    if (novasLetras.length > 0) {
+        travarTeclado();
+
+        // Espera todas as letras serem faladas e exibidas
+        await ServicoDeAudio.pronunciarLetras(
+            novasLetras.map(n => palavraAtual.onomatopeias[n.index]),
+            async (i) => {
+                const { index } = novasLetras[i];
+                const span = document.getElementById(`letra-${index}`);
+                if (span) {
+                    span.textContent = letrasDescobertas[index];
+                    span.classList.add('zoom');
+                    setTimeout(() => span.classList.remove('zoom'), TEMPO_REVELACAO);
+                }
+
+                // 🔹 força esperar entre cada letra, mesmo que seja única
+                await new Promise(resolve => setTimeout(resolve, TEMPO_REVELACAO));
             },
             TEMPO_REVELACAO
         );
@@ -301,7 +356,7 @@ function atualizarHeaderAluno() {
 
 function criarFogo() {
     const numParticulas = 25;
-    const cores = ['#ff0','#f0f','#0ff','#f00','#0f0','#00f','#ffa500'];
+    const cores = ['#ff0', '#f0f', '#0ff', '#f00', '#0f0', '#00f', '#ffa500'];
 
     // Posição aleatória da explosão
     const centroX = Math.random() * window.innerWidth;
@@ -379,7 +434,7 @@ function proximaPalavraOuNivel() {
         acertosNoNivel = 0;
         // Salva o nível no localStorage para persistência
         localStorage.setItem('nivelAtual', window.nivelAtual);
-        
+
         atualizarHeaderAluno();
         mostrarPopupNivel(nivelAtual);
     } else if (acertosNoNivel >= 3 && nivelAtual === NIVEL_MAXIMO) {
