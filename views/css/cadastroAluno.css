@@ -26,13 +26,13 @@ body {
     width: 100%;
     text-align: center;
 }
-
+/*
 .logo {
     font-size: 2.5em;
     color: #667eea;
     margin-bottom: 10px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-}
+}*/
 
 .subtitle {
     color: #666;
@@ -283,4 +283,42 @@ select:focus {
 .btn-visitante:hover {
     background: linear-gradient(45deg, #ffd700, #ffb347);
     color: #222;
+}
+
+.eduforca-titulo {
+  font-size: 2.8em;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  letter-spacing: 1px;
+  display: inline-block;
+  animation: pulsarTitulo 1.6s infinite alternate;
+}
+
+.eduforca-azul {
+  color: #29aafc; /* Azul vibrante */
+}
+
+.eduforca-roxo {
+  color: #6a4fcf; /* Roxo vibrante */
+}
+
+/* Animação do título: pulsa */
+@keyframes pulsarTitulo {
+  0% { transform: scale(1);}
+  50% { transform: scale(1.08);}
+  100% { transform: scale(1);}
+}
+/* Responsividade */
+@media (max-width: 600px) {
+  .container-apresentacao {
+    max-width: 98vw;
+    padding: 18px 4vw 18px 4vw;
+  }
+  .eduforca-titulo {
+    font-size: 2em;
+  }
+  .logo-icone-dado,
+  .logo-icone-controle {
+    font-size: 44px;
+  }
 }

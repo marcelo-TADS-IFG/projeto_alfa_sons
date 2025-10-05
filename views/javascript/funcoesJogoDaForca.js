@@ -76,29 +76,6 @@ function renderTeclado() {
 function removerAcentos(letra) {
     return letra.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
-/*
-function tentarLetra(letra) {
-    if (fimDeJogo) return;
-    let acertou = false;
-
-    const letrasAntes = [...letrasDescobertas];
-
-    palavra.split("").forEach((l, i) => {
-        if (removerAcentos(l.toUpperCase()) === letra.toUpperCase()) {
-            letrasDescobertas[i] = l;
-            acertou = true;
-        }
-    });
-
-    if (!acertou) {
-        tentativas++;
-        letrasErradas.push(letra);
-        atualizarForca();
-    }
-
-    atualizarTela(letrasAntes);
-    checarFimDeJogo();
-}*/
 
 function tentarLetra(letra) {
     if (fimDeJogo) return;
@@ -158,26 +135,8 @@ async function atualizarTela(letrasAntes = []) {
         .map((letra, index) => ({ letra, index }))
         .filter(({ index }) => letrasDescobertas[index] !== "_" && letrasAntes[index] === "_");
 
-    /*if (novasLetras.length > 0) {
-        travarTeclado();
 
-        // Espera todas as letras serem faladas e exibidas
-        await ServicoDeAudio.pronunciarLetras(
-            novasLetras.map(n => palavraAtual.onomatopeias[n.index]),
-            (i) => {
-                const { index } = novasLetras[i];
-                const span = document.getElementById(`letra-${index}`);
-                if (span) {
-                    span.textContent = letrasDescobertas[index];
-                    span.classList.add('zoom');
-                    setTimeout(() => span.classList.remove('zoom'), TEMPO_REVELACAO);
-                }
-            },
-            TEMPO_REVELACAO
-        );
 
-        liberarTeclado();
-    }*/
     if (novasLetras.length > 0) {
         travarTeclado();
 
@@ -207,6 +166,49 @@ async function atualizarTela(letrasAntes = []) {
 
     document.getElementById('hint').textContent = `Dica: ${dica}`;
 }
+/*
+async function atualizarTela(letrasAntes = []) {
+    const container = document.getElementById('wordDisplay');
+    container.innerHTML = '';
+
+    renderTeclado();
+
+    palavra.split("").forEach((_, index) => {
+        const span = document.createElement('span');
+        span.id = `letra-${index}`;
+        span.className = 'letra-jogo';
+        span.textContent = letrasAntes[index] !== "_" ? letrasDescobertas[index] : "_";
+        container.appendChild(span);
+        container.append(' ');
+    });
+
+    const novasLetras = palavra
+        .split("")
+        .map((letra, index) => ({ letra, index }))
+        .filter(({ index }) => letrasDescobertas[index] !== "_" && letrasAntes[index] === "_");
+
+    if (novasLetras.length > 0) {
+        travarTeclado();
+
+        await ServicoDeAudio.pronunciarLetras(
+            novasLetras.map(n => palavraAtual.onomatopeias[n.index]),
+            (i) => {
+                const { index } = novasLetras[i];
+                const span = document.getElementById(`letra-${index}`);
+                if (span) {
+                    span.textContent = letrasDescobertas[index];
+                    span.classList.add('zoom');
+                    setTimeout(() => span.classList.remove('zoom'), TEMPO_REVELACAO);
+                }
+            },
+            TEMPO_REVELACAO
+        );
+
+        liberarTeclado();
+    }
+
+    document.getElementById('hint').textContent = `Dica: ${dica}`;
+}*/
 
 // Bloqueia o teclado sem mudar a cor
 function travarTeclado() {
@@ -369,10 +371,10 @@ function criarFogo() {
 
         // Cada partícula explode em direção aleatória
         const angulo = Math.random() * 2 * Math.PI;
-        const distancia = 50 + Math.random() * 100;
-
+        const distancia = 80 + Math.random() * 120; // espalha mais
         const x = Math.cos(angulo) * distancia + 'px';
         const y = Math.sin(angulo) * distancia + 'px';
+
         fogo.style.setProperty('--x', x);
         fogo.style.setProperty('--y', y);
 
@@ -380,7 +382,9 @@ function criarFogo() {
         fogo.style.top = centroY + 'px';
 
         document.body.appendChild(fogo);
-        setTimeout(() => fogo.remove(), 1000);
+
+        // remove só depois que a animação termina
+        setTimeout(() => fogo.remove(), 2000);
     }
 }
 
@@ -430,6 +434,7 @@ function confirmarSair() {
 
 function proximaPalavraOuNivel() {
     if (acertosNoNivel >= 3 && nivelAtual < NIVEL_MAXIMO) {
+        //nivelAtual = 4;
         nivelAtual++;
         acertosNoNivel = 0;
         // Salva o nível no localStorage para persistência
