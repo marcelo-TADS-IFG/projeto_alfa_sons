@@ -1,17 +1,20 @@
+require('dotenv').config();
 const { MongoClient } = require('mongodb');
 
-//const url = 'mongodb://localhost:27017';
-const url = 'mongodb://127.0.0.1:27017';
-const dbName = 'alfa_db'; // Nome do banco de dados
+const url = process.env.MONGODB_URI;
+const dbName = process.env.DB_NAME;
 
 let db = null;
 
 async function connect() {
     if (db) return db;
-    const client = new MongoClient(url); // Removido useUnifiedTopology
+    console.log("📡 URL recebida:", url); // <-- adicione esta linha temporária
+    const client = new MongoClient(url);
     await client.connect();
+    console.log("🔗 Conectado a:", client.s.url);
     db = client.db(dbName);
+    console.log(`✅ Conectado ao banco ${dbName}`);
     return db;
 }
 
-module.exports = { connect }; 
+module.exports = { connect };

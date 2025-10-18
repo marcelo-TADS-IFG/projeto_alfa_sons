@@ -520,37 +520,73 @@ body {
     pointer-events: none;
 }
 
+/* --- FOGO --- */
 .fogo {
   position: absolute;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   pointer-events: none;
-  animation: explodir 1.5s ease-out forwards, cintilar 0.2s infinite;
+  animation: explodir 1.8s ease-out forwards, cintilar 0.25s infinite;
   opacity: 0.9;
+  filter: blur(1px);
   will-change: transform, opacity;
 }
 
-/* Explosão com queda */
+/* Explosão com leve desaceleração e brilho */
 @keyframes explodir {
   0% {
-    transform: translate(0, 0) scale(1);
+    transform: translate(0, 0) scale(0.5);
     opacity: 1;
+    box-shadow: 0 0 8px 2px currentColor;
   }
-  70% {
-    transform: translate(var(--x), var(--y)) scale(1.5);
+  60% {
+    transform: translate(var(--x), var(--y)) scale(1.8);
+    opacity: 1;
+    box-shadow: 0 0 12px 4px currentColor;
+  }
+  100% {
+    transform: translate(calc(var(--x) * 1.3), calc(var(--y) + 250px)) scale(0.2);
+    opacity: 0;
+    box-shadow: 0 0 2px 1px currentColor;
+  }
+}
+
+/* Brilho cintilante (simula faiscas) */
+@keyframes cintilar {
+  0%, 100% { opacity: 1; filter: brightness(1.2); }
+  50% { opacity: 0.3; filter: brightness(0.8); }
+}
+
+/* --- CONFETE --- */
+.confete {
+  position: absolute;
+  width: 6px;
+  height: 10px;
+  border-radius: 2px;
+  opacity: 0.9;
+  transform: rotate(0deg);
+  pointer-events: none;
+  animation: cairConfete 2.5s ease-in forwards, girar 0.5s linear infinite;
+  will-change: transform, opacity;
+}
+
+/* Queda dos confetes */
+@keyframes cairConfete {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
     opacity: 1;
   }
   100% {
-    transform: translate(calc(var(--x) * 1.2), calc(var(--y) + 200px)) scale(0.2);
+    transform: translate(var(--x), calc(var(--y) + 300px)) rotate(360deg);
     opacity: 0;
   }
 }
 
-/* Brilho cintilante */
-@keyframes cintilar {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+/* Rotação dos confetes (efeito de giro no ar) */
+@keyframes girar {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .container {

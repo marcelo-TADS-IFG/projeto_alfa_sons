@@ -166,49 +166,6 @@ async function atualizarTela(letrasAntes = []) {
 
     document.getElementById('hint').textContent = `Dica: ${dica}`;
 }
-/*
-async function atualizarTela(letrasAntes = []) {
-    const container = document.getElementById('wordDisplay');
-    container.innerHTML = '';
-
-    renderTeclado();
-
-    palavra.split("").forEach((_, index) => {
-        const span = document.createElement('span');
-        span.id = `letra-${index}`;
-        span.className = 'letra-jogo';
-        span.textContent = letrasAntes[index] !== "_" ? letrasDescobertas[index] : "_";
-        container.appendChild(span);
-        container.append(' ');
-    });
-
-    const novasLetras = palavra
-        .split("")
-        .map((letra, index) => ({ letra, index }))
-        .filter(({ index }) => letrasDescobertas[index] !== "_" && letrasAntes[index] === "_");
-
-    if (novasLetras.length > 0) {
-        travarTeclado();
-
-        await ServicoDeAudio.pronunciarLetras(
-            novasLetras.map(n => palavraAtual.onomatopeias[n.index]),
-            (i) => {
-                const { index } = novasLetras[i];
-                const span = document.getElementById(`letra-${index}`);
-                if (span) {
-                    span.textContent = letrasDescobertas[index];
-                    span.classList.add('zoom');
-                    setTimeout(() => span.classList.remove('zoom'), TEMPO_REVELACAO);
-                }
-            },
-            TEMPO_REVELACAO
-        );
-
-        liberarTeclado();
-    }
-
-    document.getElementById('hint').textContent = `Dica: ${dica}`;
-}*/
 
 // Bloqueia o teclado sem mudar a cor
 function travarTeclado() {
@@ -360,41 +317,62 @@ function criarFogo() {
     const numParticulas = 25;
     const cores = ['#ff0', '#f0f', '#0ff', '#f00', '#0f0', '#00f', '#ffa500'];
 
-    // Posição aleatória da explosão
+    // Posição aleatória da explosão (mais no alto da tela)
     const centroX = Math.random() * window.innerWidth;
-    const centroY = Math.random() * window.innerHeight;
+    const centroY = Math.random() * (window.innerHeight * 0.6);
 
     for (let i = 0; i < numParticulas; i++) {
         const fogo = document.createElement('div');
         fogo.classList.add('fogo');
         fogo.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
 
-        // Cada partícula explode em direção aleatória
+        // Direção e força da explosão
         const angulo = Math.random() * 2 * Math.PI;
-        const distancia = 80 + Math.random() * 120; // espalha mais
+        const distancia = 80 + Math.random() * 120;
         const x = Math.cos(angulo) * distancia + 'px';
         const y = Math.sin(angulo) * distancia + 'px';
 
         fogo.style.setProperty('--x', x);
         fogo.style.setProperty('--y', y);
-
         fogo.style.left = centroX + 'px';
         fogo.style.top = centroY + 'px';
 
-        document.body.appendChild(fogo);
+        // Variação de tamanho e tempo de explosão
+        fogo.style.width = Math.random() * 6 + 4 + 'px';
+        fogo.style.height = fogo.style.width;
+        fogo.style.animationDuration = (1.5 + Math.random() * 0.8) + 's';
 
-        // remove só depois que a animação termina
-        setTimeout(() => fogo.remove(), 2000);
+        document.body.appendChild(fogo);
+        setTimeout(() => fogo.remove(), 2500);
+    }
+
+    // --- Confetes ---
+    const numConfetes = 10;
+    for (let i = 0; i < numConfetes; i++) {
+        const confete = document.createElement('div');
+        confete.classList.add('confete');
+        confete.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+        confete.style.left = centroX + 'px';
+        confete.style.top = centroY + 'px';
+        confete.style.setProperty('--x', (Math.random() - 0.5) * 400 + 'px');
+        confete.style.setProperty('--y', (Math.random() * 300 + 150) + 'px');
+        confete.style.animationDuration = (2 + Math.random() * 1) + 's';
+
+        document.body.appendChild(confete);
+        setTimeout(() => confete.remove(), 3000);
     }
 }
 
 function iniciarFogos() {
-    fogosInterval = setInterval(criarFogo, 500); // dispara a cada 0.5s
+    if (!fogosInterval) {
+        fogosInterval = setInterval(criarFogo, 600); // a cada 0.6s
+    }
 }
 
 function pararFogos() {
     clearInterval(fogosInterval);
-    document.querySelectorAll('.fogo').forEach(f => f.remove());
+    fogosInterval = null;
+    document.querySelectorAll('.fogo, .confete').forEach(f => f.remove());
 }
 
 // Atualizando suas funções
