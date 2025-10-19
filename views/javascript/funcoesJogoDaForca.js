@@ -19,6 +19,10 @@ let jogoFinalizado = false; // controla quando o aluno chegou no nível máximo
 let fogosInterval;
 const TEMPO_REVELACAO = 2500; // Tempo de espera entre cada revelação de letra (em ms)
 
+const BASE_URL = window.location.hostname === "localhost"
+    ? "http://localhost:3000"      // se estiver rodando local
+    : "https://edu-forca.onrender.com"; // se estiver no Render
+
 async function buscarPalavraAleatoriaDoNivel() {
     try {
         let tentativasSorteio = 0;
@@ -26,7 +30,7 @@ async function buscarPalavraAleatoriaDoNivel() {
         const maxTentativas = 16; // Evita loop infinito
 
         do {
-            const response = await fetch(`http://localhost:3000/palavras/aleatoria/${nivelAtual}`);
+            const response = await fetch(`${BASE_URL}/palavras/aleatoria/${nivelAtual}`);
             if (!response.ok) throw new Error('Nenhuma palavra encontrada para este nível');
             sorteada = await response.json();
             tentativasSorteio++;
@@ -38,7 +42,7 @@ async function buscarPalavraAleatoriaDoNivel() {
         palavraAtual = sorteada;
         palavra = sorteada.texto.toUpperCase();
         dica = sorteada.dica;
-        imagem = sorteada.imagem.startsWith('http') ? sorteada.imagem : `http://localhost:3000${sorteada.imagem}`;
+        imagem = sorteada.imagem.startsWith('http') ? sorteada.imagem : `${BASE_URL}${sorteada.imagem}`;
         letrasDescobertas = palavra.split("").map(l => l === "-" ? "-" : "_");
         tentativas = 0;
         letrasErradas = [];

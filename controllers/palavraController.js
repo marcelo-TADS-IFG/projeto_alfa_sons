@@ -65,18 +65,6 @@ const criarPalavra = async (req, res) => {
   }
 };
 
-/*
-const atualizarPalavra = async (req, res) => {
-  const id = req.params.id;
-  try {
-    const palavraAtualizada = await palavraDAO.atualizar(id, req.body);
-    if (palavraAtualizada) res.json(palavraAtualizada);
-    else res.status(404).json({ error: 'Palavra não encontrada.' });
-  } catch (err) {
-    res.status(400).json({ error: 'Erro ao atualizar palavra.' });
-  }
-};*/
-
 const atualizarPalavra = async (req, res) => {
   try {
     const { id } = req.params;
