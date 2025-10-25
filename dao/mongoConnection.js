@@ -22,11 +22,11 @@ module.exports = { connect };*/
 require('dotenv').config();
 const { MongoClient } = require('mongodb');
 
-const url = process.env.MONGO_URI;
+const url = process.env.MONGODB_URI;
 const dbName = process.env.DB_NAME;
 
 console.log("Todas as variáveis de ambiente:");
-console.log("MONGO_URI:", process.env.MONGO_URI);
+console.log("MONGO_URI:", process.env.MONGODB_URI);
 console.log("DB_NAME:", process.env.DB_NAME);
 
 let db = null;
@@ -34,7 +34,7 @@ let db = null;
 async function connect() {
     if (db) return db;
     if (!url) {
-        console.error("❌ MONGO_URI não está definida!");
+        console.error("❌ MONGODB_URI não está definida!");
         process.exit(1); // interrompe o app
     }
     const client = new MongoClient(url);
