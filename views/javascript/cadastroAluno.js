@@ -1,6 +1,7 @@
 // Variáveis auxiliares
 let selectedAlunoData = null;
 let searchTimeout = null;
+const API_BASE_URL = "https://edu-forca.onrender.com";
 
 // Cadastro de alunos
 document.getElementById('cadastroForm').addEventListener('submit', async function (e) {
@@ -17,7 +18,7 @@ document.getElementById('cadastroForm').addEventListener('submit', async functio
     document.getElementById('letsPlayEffect').style.display = 'none';
 
     try {
-        const response = await fetch('http://localhost:3000/alunos', {
+        const response = await fetch(`${API_BASE_URL}/alunos`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nome, sobrenome, turma })
