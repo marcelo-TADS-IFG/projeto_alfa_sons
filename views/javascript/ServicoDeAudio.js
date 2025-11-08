@@ -3,7 +3,7 @@ class ServicoDeAudio {
   static _cacheOnomatopeias = {}; // cache de áudios pré-carregados
 
   static _normalizar(palavra) {
-    return palavra.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return palavra.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   }
 
   static pronunciarPalavra(palavra) {
