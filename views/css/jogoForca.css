@@ -1,16 +1,32 @@
+/* ============================
+   EDUFORCA - CSS OTIMIZADO
+   Mantive suas classes originais,
+   acrescentei responsividade e touch
+   ============================ */
+
+/* Reset / otimizações touch */
+html, body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent; /* remove highlight em touch */
+  text-rendering: optimizeLegibility;
+}
+
 body {
     font-family: 'Comic Sans MS', cursive, sans-serif;
-    /* Substituindo o gradiente pela imagem */
     background-image: url('../images/cerejeira.png');
-    background-size: cover; /* Faz a imagem preencher toda a tela */
-    background-position: center; /* Centraliza a imagem */
-    background-repeat: no-repeat; /* Evita que a imagem se repita */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0;
+    padding: 0;
 }
 
+/* Container principal */
 .container {
     background: white;
     border-radius: 25px;
@@ -18,9 +34,14 @@ body {
     padding: 60px 40px;
     text-align: center;
     max-width: 800px;
-    margin-top: 80px; /* unificado */
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
+/* ICON / DICE */
 .icon {
     font-size: 4em;
     margin-bottom: 20px;
@@ -28,18 +49,10 @@ body {
     display: inline-block;
 }
 @keyframes dado-bounce {
-    0%, 100% { 
-        transform: translateY(0) rotate(0deg); 
-    }
-    25% { 
-        transform: translateY(-10px) rotate(5deg); 
-    }
-    50% { 
-        transform: translateY(-5px) rotate(-3deg); 
-    }
-    75% { 
-        transform: translateY(-8px) rotate(2deg); 
-    }
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-10px) rotate(5deg); }
+    50% { transform: translateY(-5px) rotate(-3deg); }
+    75% { transform: translateY(-8px) rotate(2deg); }
 }
 .icon:hover {
     animation: dado-spin 0.8s ease-in-out;
@@ -49,6 +62,8 @@ body {
     50% { transform: rotate(180deg) scale(1.2); }
     100% { transform: rotate(360deg) scale(1); }
 }
+
+/* Word display */
 .word-display {
     font-size: 2.2em;
     font-weight: bold;
@@ -60,18 +75,26 @@ body {
     display: inline-block;
     transition: transform 0.3s ease;
 }
+
+/* Letras (caracteres) do jogo */
 .letra-jogo {
     display: inline-block;
     font-weight: bold;
     font-size: 48px;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+    -webkit-user-select: none;
+    user-select: none;
 }
+
+/* Hint */
 .hint {
     font-size: 1.6em;
     color: #666;
     margin: 10px 0 5px 0;
     font-style: italic;
 }
+
+/* Teclado */
 .teclado {
     display: flex;
     flex-wrap: wrap;
@@ -79,6 +102,8 @@ body {
     gap: 8px;
     margin-top: 20px;
 }
+
+/* Botões do teclado - base */
 .teclado button {
     background: #667eea;
     color: white;
@@ -90,6 +115,14 @@ body {
     cursor: pointer;
     margin: 2px;
     transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    touch-action: manipulation; /* melhora a resposta ao toque */
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+}
+
+/* Foco acessível */
+.teclado button:focus-visible {
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.25);
 }
 
 /* Estado desabilitado */
@@ -98,166 +131,80 @@ body {
     color: #eee;
     border: 2px solid #eee;
     cursor: not-allowed;
-    box-shadow: none; /* consolidado */
+    box-shadow: none;
+    transform: none;
 }
 
-/* Hover e toque */
+/* Hover (desktop) / Active (touch) / touch-active (adicionado via JS) */
 .teclado button:hover:not(:disabled),
 .teclado button:active:not(:disabled),
-.teclado button.touch-active {
-    background: #eaac66 0%;;
+.teclado button.touch-active:not(:disabled) {
+    background: #eaac66;
     transform: scale(1.15);
     box-shadow: 0 6px 15px rgba(0,0,0,0.25);
 }
 
-/* Botão pressionado */
+/* Botão pressionado - efeito "afundar" */
 .teclado button:active:not(:disabled) {
-    transform: scale(0.9) rotate(-2deg);
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+    transform: scale(0.95) rotate(-2deg);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.18);
 }
 
-/* Letras corretas */
+/* Classes corretas/erradas (mantive suas cores) */
 .teclado button.correct {
     background: #28a745 !important;
     animation: pulse 0.4s ease forwards;
 }
-
-/* Letras erradas */
 .teclado button.wrong {
     background: #dc3545 !important;
     animation: shake 0.5s;
 }
 
-/* Animação de pulso para acertos */
+/* Animações */
 @keyframes pulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
+    50% { transform: scale(1.15); }
     100% { transform: scale(1); }
 }
-
-/* Animação de shake para erros */
 @keyframes shake {
     0% { transform: translateX(0); }
-    20% { transform: translateX(-10px); }
-    40% { transform: translateX(10px); }
-    60% { transform: translateX(-10px); }
-    80% { transform: translateX(10px); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
     100% { transform: translateX(0); }
 }
 
-/* Letras do jogo - efeito de acerto */
+/* Letras do jogo - acerto */
 .letra-jogo.correct {
     animation: glow 0.6s forwards;
 }
-
 @keyframes glow {
     0% { text-shadow: 0 0 0 #28a745; color: #28a745; }
     50% { text-shadow: 0 0 15px #28a745; color: #28a745; }
     100% { text-shadow: 0 0 0 #28a745; color: #28a745; }
 }
 
-.mensagem {
-    font-size: 1.2em;
-    margin: 15px 0 0 0;
-    font-weight: bold;
-    display: none;
-}
-.mensagem.sucesso {
-    color: #28a745;
-    display: block;
-}
-.mensagem.erro {
-    color: #dc3545;
-    display: block;
-}
-.reward-image {
-    max-width: 200px;
-    max-height: 200px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    margin: 15px auto;
-    display: block;
-}
-.popup-parabens {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-.popup-content {
-    background: #fff;
-    border-radius: 15px;
-    padding: 30px 40px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    max-width: 90vw;
-    max-height: 90vh;
-    animation: popup-bounce 0.7s;
-}
-.popup-imagem {
-    max-width: 180px;
-    max-height: 180px;
-    border-radius: 10px;
-    margin: 20px 0 10px 0;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-}
-.popup-palavra {
-    font-size: 2em;
-    font-weight: bold;
-    color: #333;
-    margin: 10px 0 0 0;
-    letter-spacing: 8px;
-}
-@keyframes popup-bounce {
-    0% { transform: scale(0.7); opacity: 0; }
-    60% { transform: scale(1.1); opacity: 1; }
-    80% { transform: scale(0.95); }
-    100% { transform: scale(1); }
-}
-.mensagem.erro.shake {
-    animation: shake 0.5s;
-}
-.popup-nivel {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-}
-.popup-nivel-content {
-    background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%);
-    border-radius: 30px;
-    padding: 45px 60px 40px 60px;
-    text-align: center;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: popup-bounce 0.8s;
-}
-.popup-nivel-emoji {
-    font-size: 3em;
-    margin-bottom: 10px;
-    animation: popup-bounce 1s infinite alternate;
-}
-.popup-nivel-msg {
-    font-size: 2em;
-    color: #00b894;
-    font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif;
-    text-shadow: 2px 2px 0 #fff, 0 2px 8px #b2f7ef;
-    margin-bottom: 10px;
-}
-.popup-nivel-nivel {
-    font-size: 1.5em;
-    color: #0984e3;
-    font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif;
-    margin-top: 5px;
-}
+/* Mensagens e reward */
+.mensagem { font-size: 1.2em; margin: 15px 0 0 0; font-weight: bold; display: none; }
+.mensagem.sucesso { color: #28a745; display: block; }
+.mensagem.erro { color: #dc3545; display: block; }
+.reward-image { max-width: 200px; max-height: 200px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); margin: 15px auto; display: block; }
+
+/* POPUP - parabéns */
+.popup-parabens { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.popup-content { background: #fff; border-radius: 15px; padding: 30px 40px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-width: 90vw; max-height: 90vh; animation: popup-bounce 0.7s; }
+.popup-imagem { max-width: 180px; max-height: 180px; border-radius: 10px; margin: 20px 0 10px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+.popup-palavra { font-size: 2em; font-weight: bold; color: #333; margin: 10px 0 0 0; letter-spacing: 8px; }
+
+/* Popup nível */
+.popup-nivel { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+.popup-nivel-content { background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%); border-radius: 30px; padding: 45px 60px 40px 60px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.25); display: flex; flex-direction: column; align-items: center; animation: popup-bounce 0.8s; }
+.popup-nivel-emoji { font-size: 3em; margin-bottom: 10px; animation: popup-bounce 1s infinite alternate; }
+.popup-nivel-msg { font-size: 2em; color: #00b894; font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif; text-shadow: 2px 2px 0 #fff, 0 2px 8px #b2f7ef; margin-bottom: 10px; }
+.popup-nivel-nivel { font-size: 1.5em; color: #0984e3; font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif; margin-top: 5px; }
+
+/* Botões gerais */
 .btn-recomecar, .btn-sair {
     padding: 12px 20px;
     border: none;
@@ -266,141 +213,27 @@ body {
     cursor: pointer;
     transition: transform 0.2s;
 }
-.btn-recomecar {
-    background-color: #00b894;
-    color: #fff;
-}
-.btn-sair {
-    background-color: #d63031;
-    color: #fff;
-}
-.btn-recomecar:hover, .btn-sair:hover {
-    transform: scale(1.05);
-}
-.modal-fimdejogo {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    animation: fadeIn 0.3s;
-}
-.modal-fimdejogo-content {
-    background: rgba(240,240,240,0.7);
-    border-radius: 15px;
-    padding: 30px 40px;
-    text-align: center;
-    font-size: 1.8em;
-    color: #dc3545;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    animation: popin 0.3s;
-    max-width: 400px;
-    -webkit-backdrop-filter: blur(5px);
-    backdrop-filter: blur(5px);
-}
+.btn-recomecar { background-color: #00b894; color: #fff; }
+.btn-sair { background-color: #d63031; color: #fff; }
+.btn-recomecar:hover, .btn-sair:hover { transform: scale(1.05); }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-@keyframes popin {
-    0% { transform: scale(0.8); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
+/* Modal fim de jogo */
+.modal-fimdejogo { position: fixed; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 2000; animation: fadeIn 0.3s; }
+.modal-fimdejogo-content { background: rgba(240,240,240,0.7); border-radius: 15px; padding: 30px 40px; text-align: center; font-size: 1.8em; color: #dc3545; font-family: 'Comic Sans MS', cursive, sans-serif; box-shadow: 0 8px 25px rgba(0,0,0,0.15); animation: popin 0.3s; max-width: 400px; -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); }
 
-/* Fundo escuro */
-.popup-sair {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.6);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 3000;
-}
+/* Popup sair (alternativa) */
+.popup-sair { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 3000; }
+.popup-sair-content { background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); border-radius: 25px; padding: 40px 50px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.25); animation: popup-bounce 0.7s; }
+.popup-sair-emoji-hand { font-size: 3em; margin-bottom: 10px; display: inline-block; animation: wave-hand 1.5s infinite; transform-origin: 70% 70%; }
+.popup-sair-emoji-wink { font-size: 3em; margin-left: 10px; display: inline-block; animation: wink-eye 2s infinite; }
+.popup-sair-msg { font-size: 1.8em; font-family: 'Comic Sans MS', cursive, sans-serif; color: #2d3436; text-shadow: 2px 2px 0 #fff, 0 2px 6px rgba(0,0,0,0.2); margin-bottom: 20px; }
+.popup-sair-btn { background: #6c5ce7; color: white; border: none; padding: 12px 28px; font-size: 1.2em; border-radius: 30px; cursor: pointer; transition: background 0.3s; }
+.popup-sair-btn:hover { background: #341f97; }
 
-/* Caixa principal */
-.popup-sair-content {
-    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-    border-radius: 25px;
-    padding: 40px 50px;
-    text-align: center;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-    animation: popup-bounce 0.7s;
-}
-
-/* Emoji - mãozinha */
-.popup-sair-emoji-hand {
-    font-size: 3em;
-    margin-bottom: 10px;
-    display: inline-block;
-    animation: wave-hand 1.5s infinite;
-    transform-origin: 70% 70%; /* define o "cotovelo" da mão */
-}
-
-/* Emoji - carinha piscando */
-.popup-sair-emoji-wink {
-    font-size: 3em;
-    margin-left: 10px;
-    display: inline-block;
-    animation: wink-eye 2s infinite;
-}
-
-/* Texto */
-.popup-sair-msg {
-    font-size: 1.8em;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    color: #2d3436;
-    text-shadow: 2px 2px 0 #fff, 0 2px 6px rgba(0,0,0,0.2);
-    margin-bottom: 20px;
-}
-
-/* Botão */
-.popup-sair-btn {
-    background: #6c5ce7;
-    color: white;
-    border: none;
-    padding: 12px 28px;
-    font-size: 1.2em;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-.popup-sair-btn:hover {
-    background: #341f97;
-}
-
-/* Animação do popup */
-@keyframes popup-bounce {
-    from { transform: translateY(0); }
-    to { transform: translateY(-10px); }
-}
-
-/* Animação da mão acenando */
-@keyframes wave-hand {
-    0% { transform: rotate(0deg); }
-    20% { transform: rotate(20deg); }
-    40% { transform: rotate(-10deg); }
-    60% { transform: rotate(20deg); }
-    80% { transform: rotate(-5deg); }
-    100% { transform: rotate(0deg); }
-}
-
-/* Animação do piscar */
-@keyframes wink-eye {
-    0%, 90%, 100% { transform: scale(1); }
-    95% { transform: scale(0.9); } /* simula piscada rápida */
-}
-
+/* header aluno */
 .header-aluno {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    /*background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);*/
+    top: 0; left: 0; right: 0;
     background: linear-gradient(135deg, #eaac66 0%, #764ba2 100%);
     color: white;
     padding: 15px 20px;
@@ -408,18 +241,10 @@ body {
     z-index: 100;
     font-family: 'Comic Sans MS', cursive, sans-serif;
 }
-.header-aluno-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+.header-aluno-content { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
+.header-actions { display: flex; align-items: center; gap: 10px; }
+
+/* botão sair no header - manteve classe .btn-sair */
 .btn-sair {
     background: #fff;
     color: #764ba2;
@@ -431,15 +256,14 @@ body {
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: background 0.2s, color 0.2s;
+    transition: background 0.2s, color 0.2s, transform 0.12s;
 }
-.btn-sair:hover {
-    background: #764ba2;
-    color: #fff;
-}
+.btn-sair:hover { background: #764ba2; color: #fff; transform: translateY(-2px); }
+
+/* Modal sair (versão que você chamou de modal) */
 .modal-sair {
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    inset: 0;
     background: rgba(0,0,0,0.3);
     display: flex;
     align-items: center;
@@ -459,68 +283,30 @@ body {
     animation: popin 0.3s;
     max-width: 350px;
 }
-.modal-sair-btns {
-    margin-top: 25px;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-.modal-sair-btn {
-    background: #764ba2;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 22px;
-    font-size: 1em;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.modal-sair-btn.cancelar {
-    background: #b3b3b3;
-}
-.modal-sair-btn:hover {
-    background: #667eea;
-}
-.aluno-info {
-    display: flex;
-    gap: 30px;
-    align-items: center;
-}
-.aluno-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-.aluno-label {
-    font-size: 0.8em;
-    opacity: 0.9;
-    margin-bottom: 2px;
-}
-.aluno-value {
-    font-size: 1.1em;
-    font-weight: bold;
-}
-.aluno-nome {
-    font-size: 1.3em;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-}
+.modal-sair-btns { margin-top: 25px; display: flex; justify-content: center; gap: 20px; }
+.modal-sair-btn { background: #764ba2; color: #fff; border: none; border-radius: 8px; padding: 8px 22px; font-size: 1em; font-family: 'Comic Sans MS', cursive, sans-serif; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+.modal-sair-btn.cancelar { background: #b3b3b3; }
+.modal-sair-btn:hover { background: #667eea; }
+
+/* Aluno info */
+.aluno-info { display: flex; gap: 30px; align-items: center; }
+.aluno-item { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.aluno-label { font-size: 0.8em; opacity: 0.9; margin-bottom: 2px; }
+.aluno-value { font-size: 1.1em; font-weight: bold; }
+.aluno-nome { font-size: 1.3em; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+
+/* .zoom usado dinamicamente via JS */
 .zoom {
     transform: scale(1.6);
     transition: transform 0.6s ease, text-shadow 0.6s ease;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
-    color: rgba(6, 2, 29, 1); /* opcional */
+    color: rgba(6, 2, 29, 1);
 }
 
 /* Bloqueia clique sem mudar aparência */
-.teclado-bloqueado button {
-    pointer-events: none;
-}
+.teclado-bloqueado button { pointer-events: none; }
 
-/* --- FOGO --- */
+/* Fogo e confete - mantive suas animações e otimizações */
 .fogo {
   position: absolute;
   width: 8px;
@@ -532,33 +318,13 @@ body {
   filter: blur(1px);
   will-change: transform, opacity;
 }
-
-/* Explosão com leve desaceleração e brilho */
 @keyframes explodir {
-  0% {
-    transform: translate(0, 0) scale(0.5);
-    opacity: 1;
-    box-shadow: 0 0 8px 2px currentColor;
-  }
-  60% {
-    transform: translate(var(--x), var(--y)) scale(1.8);
-    opacity: 1;
-    box-shadow: 0 0 12px 4px currentColor;
-  }
-  100% {
-    transform: translate(calc(var(--x) * 1.3), calc(var(--y) + 250px)) scale(0.2);
-    opacity: 0;
-    box-shadow: 0 0 2px 1px currentColor;
-  }
+  0% { transform: translate(0, 0) scale(0.5); opacity: 1; box-shadow: 0 0 8px 2px currentColor; }
+  60% { transform: translate(var(--x), var(--y)) scale(1.8); opacity: 1; box-shadow: 0 0 12px 4px currentColor; }
+  100% { transform: translate(calc(var(--x) * 1.3), calc(var(--y) + 250px)) scale(0.2); opacity: 0; box-shadow: 0 0 2px 1px currentColor; }
 }
+@keyframes cintilar { 0%, 100% { opacity: 1; filter: brightness(1.2); } 50% { opacity: 0.3; filter: brightness(0.8); } }
 
-/* Brilho cintilante (simula faiscas) */
-@keyframes cintilar {
-  0%, 100% { opacity: 1; filter: brightness(1.2); }
-  50% { opacity: 0.3; filter: brightness(0.8); }
-}
-
-/* --- CONFETE --- */
 .confete {
   position: absolute;
   width: 6px;
@@ -570,32 +336,10 @@ body {
   animation: cairConfete 2.5s ease-in forwards, girar 0.5s linear infinite;
   will-change: transform, opacity;
 }
+@keyframes cairConfete { 0% { transform: translate(0, 0) rotate(0deg); opacity: 1; } 100% { transform: translate(var(--x), calc(var(--y) + 300px)) rotate(360deg); opacity: 0; } }
+@keyframes girar { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* Queda dos confetes */
-@keyframes cairConfete {
-  0% {
-    transform: translate(0, 0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(var(--x), calc(var(--y) + 300px)) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-/* Rotação dos confetes (efeito de giro no ar) */
-@keyframes girar {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.container {
-  display: flex;
-  flex-direction: column; /* muda de linha para coluna */
-  align-items: center; /* centraliza os itens no centro */
-  justify-content: center;
-}
-
+/* Título EdForca */
 .eduforca-titulo {
   font-size: 2.8em;
   font-weight: 800;
@@ -604,32 +348,109 @@ body {
   display: inline-block;
   animation: pulsarTitulo 1.6s infinite alternate;
 }
+.eduforca-azul { color: #29aafc; }
+.eduforca-roxo { color: #6a4fcf; }
+@keyframes pulsarTitulo { 0% { transform: scale(1);} 50% { transform: scale(1.08);} 100% { transform: scale(1);} }
 
-.eduforca-azul {
-  color: #29aafc; /* Azul vibrante */
-}
+/* ANIMAÇÕES GERAIS */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popin { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes popup-bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+@keyframes wave-hand { 0% { transform: rotate(0deg); } 20% { transform: rotate(20deg); } 40% { transform: rotate(-10deg); } 60% { transform: rotate(20deg); } 80% { transform: rotate(-5deg); } 100% { transform: rotate(0deg); } }
+@keyframes wink-eye { 0%, 90%, 100% { transform: scale(1); } 95% { transform: scale(0.9); } }
 
-.eduforca-roxo {
-  color: #6a4fcf; /* Roxo vibrante */
-}
+/* ============================
+   RESPONSIVIDADE - BREAKPOINTS
+   ============================ */
 
-/* Animação do título: pulsa */
-@keyframes pulsarTitulo {
-  0% { transform: scale(1);}
-  50% { transform: scale(1.08);}
-  100% { transform: scale(1);}
-}
-/* Responsividade */
+/* Pequenos dispositivos / celulares (<= 600px) */
 @media (max-width: 600px) {
-  .container-apresentacao {
+
+  .container {
     max-width: 98vw;
-    padding: 18px 4vw 18px 4vw;
+    padding: 18px 4vw;
+    margin-top: 20px;
+    border-radius: 16px;
   }
-  .eduforca-titulo {
-    font-size: 2em;
+
+  .eduforca-titulo { font-size: 2em; }
+  .word-display { font-size: 1.6em; letter-spacing: 5px; }
+  .letra-jogo { font-size: 34px; }
+  .hint { font-size: 1.05em; }
+
+  .teclado button {
+    width: 54px;
+    height: 50px;
+    font-size: 1.2em;
+    border-radius: 8px;
   }
-  .logo-icone-dado,
-  .logo-icone-controle {
-    font-size: 44px;
+
+  .popup-content,
+  .popup-nivel-content,
+  .popup-sair-content,
+  .modal-sair-content {
+    padding: 20px;
+    max-width: 92vw;
   }
+
+  .popup-palavra { font-size: 1.4em; letter-spacing: 5px; }
+  .popup-imagem, .reward-image { max-width: 120px; }
+
+  .header-aluno { padding: 10px 12px; }
+  .aluno-nome { font-size: 1.05em; }
+
 }
+
+/* Tablets: 601px até 1024px (pequenos e médios tablets) */
+@media (min-width: 601px) and (max-width: 1024px) {
+
+  body { background-size: contain; }
+
+  .container {
+    max-width: 90vw;
+    padding: 40px 30px;
+    margin-top: 40px;
+    border-radius: 20px;
+  }
+
+  .eduforca-titulo { font-size: 2.4em; }
+  .word-display { font-size: 1.9em; letter-spacing: 6px; }
+  .letra-jogo { font-size: 38px; }
+  .hint { font-size: 1.25em; }
+
+  /* Aumenta os botões para toque confortável em tablets */
+  .teclado button {
+    width: 60px;
+    height: 55px;
+    font-size: 1.25em;
+    border-radius: 10px;
+  }
+
+  .popup-content,
+  .popup-nivel-content,
+  .popup-sair-content,
+  .modal-sair-content {
+    max-width: 80vw;
+    padding: 28px;
+  }
+
+  .popup-palavra { font-size: 1.6em; letter-spacing: 6px; }
+  .popup-imagem, .reward-image { max-width: 150px; }
+
+  .header-aluno { padding: 12px 15px; }
+  .aluno-nome { font-size: 1.15em; }
+
+}
+
+/* Desktop grande (> 1024px) ajustes finos */
+@media (min-width: 1025px) {
+  .container { max-width: 950px; padding: 60px 50px; }
+  .teclado button { width: 48px; height: 42px; font-size: 1.4em; display: flex; justify-content: center; align-items: center; padding: 1.5rem;}
+  .word-display { font-size: 2.4em; letter-spacing: 10px; }
+  .letra-jogo { font-size: 50px; }
+  .popup-content { max-width: 60vw; padding: 36px 44px; }
+}
+
+/* ============================
+   FIM DO CSS
+   ============================ */
