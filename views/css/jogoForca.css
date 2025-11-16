@@ -376,7 +376,7 @@ body {
   .eduforca-titulo { font-size: 2em; }
   .word-display { font-size: 1.6em; letter-spacing: 5px; }
   .letra-jogo { font-size: 34px; }
-  .hint { font-size: 1.05em; }
+  .hint { font-size: 1.6em; }
 
   .teclado button {
     width: 54px;
@@ -416,7 +416,7 @@ body {
   .eduforca-titulo { font-size: 2.4em; }
   .word-display { font-size: 1.9em; letter-spacing: 6px; }
   .letra-jogo { font-size: 38px; }
-  .hint { font-size: 1.25em; }
+  .hint { font-size: 1.6em; }
 
   /* Aumenta os botões para toque confortável em tablets */
   .teclado button {
